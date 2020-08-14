@@ -35,24 +35,24 @@ Function Get-Script{
 
 Write-Output "*"
 Get-Script -script "setup_users.ps1"
-Write-Output "Executing ./octopus-demobox-userdata-helper-scripts/setup_users.ps1"
-./octopus-demobox-userdata-helper-scripts/setup_users.ps1
+Write-Output "Executing ./my_dotnet_octopus_poc/setup_users.ps1"
+./my_dotnet_octopus_poc/setup_users.ps1
 
 Write-Output "*"
 Get-Script -script "setup_dotnet_core.ps1"
-Write-Output "Executing ./octopus-demobox-userdata-helper-scripts/setup_dotnet_core.ps1"
-./octopus-demobox-userdata-helper-scripts/setup_dotnet_core.ps1
+Write-Output "Executing ./my_dotnet_octopus_poc/setup_dotnet_core.ps1"
+./my_dotnet_octopus_poc/setup_dotnet_core.ps1
 
 Write-Output "*"
 Get-Script -script "setup_iis.ps1"
-Write-Output "Executing ./octopus-demobox-userdata-helper-scripts/setup_iis.ps1"
-./octopus-demobox-userdata-helper-scripts/setup_iis.ps1
+Write-Output "Executing ./my_dotnet_octopus_poc/setup_iis.ps1"
+./my_dotnet_octopus_poc/setup_iis.ps1
 
 $octopusServerUrl = "__OCTOPUSURL__"
 $registerInEnvironments = "__ENV__"
 
 Write-Output "*"
 Get-Script -script "install_tentacle.ps1"
-Write-Output "Executing ./octopus-demobox-userdata-helper-scripts/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments"
-./octopus-demobox-userdata-helper-scripts/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments
+Write-Output "Executing ./my_dotnet_octopus_poc/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments"
+./my_dotnet_octopus_poc/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments
 </powershell>
