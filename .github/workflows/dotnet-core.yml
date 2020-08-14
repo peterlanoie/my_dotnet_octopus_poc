@@ -1,0 +1,70 @@
+name: Build, pack and push application NuGet to Octopus
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+    - 'Application/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+    - 'Application/**'
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Manual run' 
+
+env:  
+  MARSHALLING_FOLDER: Marshall
+  ARTIFACTS_FOLDER: Artifact
+  PACKAGE_NAME: RandomQuotes_application
+  OCTOPUS_PROJECT_NAME: RandomQuotes  
+  OCTOPUS_SPACE_NAME: Default
+  PACKAGE_VERSION: 0.0.${{ github.run_number }}
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Logging variables      
+      run: |
+        echo MARSHALLING_FOLDER is: $MARSHALLING_FOLDER
+        echo ARTIFACTS_FOLDER is: $ARTIFACTS_FOLDER
+        echo OUTPUT_FOLDER is: $OUTPUT_FOLDER
+        echo PACKAGE_NAME is: $PACKAGE_NAME
+        echo OCTOPUS_PROJECT_NAME is: $OCTOPUS_PROJECT_NAME
+        echo OCTOPUS_SPACE_NAME is: $OCTOPUS_SPACE_NAME 
+          
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.0.0
+    
+    - name: Install dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Publish
+      run: dotnet publish --output $MARSHALLING_FOLDER
+    
+    - name: Install Octopus CLI
+      run: |
+        sudo apt update && sudo apt install --no-install-recommends gnupg curl ca-certificates apt-transport-https && \
+        curl -sSfL https://apt.octopus.com/public.key | sudo apt-key add - && \
+        sudo sh -c "echo deb https://apt.octopus.com/ stable main > /etc/apt/sources.list.d/octopus.com.list" && \
+        sudo apt update && sudo apt install octopuscli
+    
+    - name: Pack
+      run: octo pack --basePath=$PACKAGE_NAME/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$PACKAGE_VERSION
+    
+    - name: Handoff to Octopus Deploy
+      env:
+        OCTOPUS_URL: ${{ secrets.OCTOPUS_SERVER_URL }}
+        OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY }}        
+      run: octo push --package="$ARTIFACTS_FOLDER/$PACKAGE_NAME.$PACKAGE_VERSION.nupkg" --server=$OCTOPUS_URL --apiKey=$OCTOPUS_API_KEY --space=$OCTOPUS_SPACE_NAME
