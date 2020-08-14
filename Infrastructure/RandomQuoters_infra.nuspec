@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package>
   <metadata>
-    <id>octopus-demobox</id>
-    <version>0.0.1</version>
+    <id>RandomQuotes_infra</id>
+    <version>0.0.0</version>
     <authors>Alex Yates</authors>
     <description>Everything you need to spin up your own Octopus playground in AWS</description>
     <language>en-US</language>
