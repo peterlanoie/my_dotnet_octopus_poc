@@ -38,7 +38,7 @@ jobs:
   
     - name: Set environment variables      
       run: |        
-        $versionFromFile = Get-Content Infrastructure\versionprefix.txt 
+        $versionFromFile = Get-Content versionprefix.txt 
         Write-Host "Found $versionFromFile in versionprefix.md"
         $versionNumber = "$versionfromFile.${env:GITHUB_RUN_NUMBER}"
         Write-Host "Setting environment version number to: $versionNumber"
