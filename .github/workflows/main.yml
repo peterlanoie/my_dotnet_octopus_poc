@@ -13,6 +13,10 @@ on:
     branches: [ main ]
     paths:
     - 'Infrastructure/**'
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Manual run'  
 
 env:  
   OUTPUT_FOLDER: PackagesOutput
@@ -47,7 +51,7 @@ jobs:
 
     - name: Pack the NuGet
       run: |
-        nuget pack "Infrastructure\octopus-demobox.nuspec" -Version "${env:PACKAGE_VERSION}" -OutputDirectory "${env:OUTPUT_FOLDER}" 
+        nuget pack "Infrastructure\${env:PACKAGE_NAME}.nuspec" -Version "${env:PACKAGE_VERSION}" -OutputDirectory "${env:OUTPUT_FOLDER}" 
       shell: powershell  
 
     - name: Install Octopus Tooling
