@@ -19,7 +19,7 @@ Function Get-Script{
     [string]$owner = "dlmconsultants",
     [string]$repo = "my_dotnet_octopus_poc",
     [string]$branch = "main",
-    [string]$path = "Infrastucture/UserDataDownloads",
+    [string]$path = "Infrastructure/UserDataDownloads",
     [string]$outFile = ".\$repo\$script"
   )
   if ((test-path $repo) -ne $true) {
