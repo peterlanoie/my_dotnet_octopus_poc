@@ -18,7 +18,7 @@ Function Get-Script{
     [Parameter(Mandatory=$true)][string]$script,
     [string]$owner = "dlmconsultants",
     [string]$repo = "my_dotnet_octopus_poc",
-    [string]$branch = "master",
+    [string]$branch = "main",
     [string]$path = "Infrastucture/UserDataDownloads",
     [string]$outFile = ".\$repo\$script"
   )
