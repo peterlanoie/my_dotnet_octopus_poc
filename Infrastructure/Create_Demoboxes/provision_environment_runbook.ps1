@@ -1,0 +1,68 @@
+param(
+    [Parameter(Mandatory)][ValidateNotNullOrEmpty()]$awsAccessKey,
+    [Parameter(Mandatory)][ValidateNotNullOrEmpty()]$awsSecretKey,
+    $defaulAwsRegion = "eu-west-1", # Other carbon neutral regions are listed here: https://aws.amazon.com/about-aws/sustainability/
+    $securityGroupName = "octopus-demobox",
+    $count = 1,
+    $instanceType = "t2.micro", # 1 vCPU, 1GiB Mem, free tier elligible: https://aws.amazon.com/ec2/instance-types/
+    $ami = "ami-0216167faf008006e", # Microsoft Windows Server 2019 Base with Containers
+    $tagName = "octo_demobox",
+    $tagValue = (Get-Date -Format "yyyy-MM-dd - HH:mm:ss"),
+    $octoUrl = "",
+    $octoEnv = "",
+    [Switch]$runLocally 
+)
+
+$ErrorActionPreference = "Stop"  
+
+Write-Output "*"
+Write-Output "Setup..."
+Write-Output "*"
+
+# Making it easier to run this locally for testing
+if ($runLocally) {
+    if ($octoUrl -like ""){
+        Write-Error "  Please provide a value for octoUrl."
+    }
+    if ($octoEnv -like ""){
+        $octoEnv = "Dev"
+        Write-Output "  No value provided for octoEnv. Defaulting to: $octoEnv"
+    }
+}
+else {
+    if ($octoUrl -like ""){
+        $octoUrl = $OctopusParameters["Octopus.Web.ServerUri"]
+        Write-Output "  Setting octoUrl to: $octoUrl"
+    }
+    if ($octoEnv -like ""){
+        $octoEnv = $OctopusParameters["Octopus.Environment.Name"]
+        Write-Output "  Setting octoEnv to: $octoEnv"
+    }
+}
+
+Write-Output "  Execution root dir: $PSScriptRoot"
+Write-Output "*"
+
+# Install AWS tools
+Write-Output "Executing .\helper_scripts\install_AWS_tools.ps1..."
+Write-Output "  (No parameters)"
+& $PSScriptRoot\helper_scripts\install_AWS_tools.ps1
+Write-Output "*"
+
+# Configure your default profile
+Write-Output "Executing .\helper_scripts\configure_default_aws_profile.ps1..."
+Write-Output "  (No parameters)"
+& $PSScriptRoot\helper_scripts\configure_default_aws_profile.ps1 -AwsAccessKey $awsAccessKey -AwsSecretKey $awsSecretKey -DefaulAwsRegion $defaulAwsRegion
+Write-Output "*"
+
+# Creates a security group in AWS to allow RDP sessions on all your demo VMs
+Write-Output "Executing .\helper_scripts\create_security_group.ps1..."
+Write-Output "  Parameters: -securityGroupName $securityGroupName"
+& $PSScriptRoot\helper_scripts\create_security_group.ps1 -securityGroupName $securityGroupName
+Write-Output "*"
+
+# Creates the VMs
+Write-Output "Executing .\helper_scripts\create_demoboxes.ps1..."
+Write-Output "  Parameters: -count $count -instanceType $instanceType -ami $ami -tagName $tagName -tagValue $tagValue"
+& $PSScriptRoot\helper_scripts\create_demoboxes.ps1 -count $count -instanceType $instanceType -ami $ami -tagName $tagName -tagValue $tagValue -octoUrl $octoUrl -octoEnv $octoEnv -DeployTentacle
+Write-Output "*"
