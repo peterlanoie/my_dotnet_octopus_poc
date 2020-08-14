@@ -45,13 +45,13 @@ jobs:
         dotnet-version: 2.0.0
     
     - name: Install dependencies
-      run: dotnet restore Application\RandomQuotes.sln
+      run: dotnet restore Application/RandomQuotes/RandomQuotes.csproj
     
     - name: Build
-      run: dotnet build Application\RandomQuotes.sln --configuration Release --no-restore
+      run: dotnet build Application/RandomQuotes/RandomQuotes.csproj --configuration Release --no-restore
     
     - name: Publish
-      run: dotnet publish Application\RandomQuotes.sln --output $MARSHALLING_FOLDER
+      run: dotnet publish Application/RandomQuotes/RandomQuotes.csproj --output $MARSHALLING_FOLDER
     
     - name: Install Octopus CLI
       run: |
