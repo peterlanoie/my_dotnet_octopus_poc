@@ -7,6 +7,5 @@
     <description>Everything you need to spin up your own Octopus playground in AWS</description>
     <language>en-US</language>
     <projectUrl>https://github.com/dlmconsultants/octopus-demobox</projectUrl>
-    <license type="file">..\LICENSE</license>
   </metadata>
 </package>
