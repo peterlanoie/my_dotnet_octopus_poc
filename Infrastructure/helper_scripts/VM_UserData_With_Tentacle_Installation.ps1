@@ -17,15 +17,16 @@ Function Get-Script{
   param (
     [Parameter(Mandatory=$true)][string]$script,
     [string]$owner = "dlmconsultants",
-    [string]$repo = "octopus-demobox-userdata-helper-scripts",
+    [string]$repo = "my_dotnet_octopus_poc",
     [string]$branch = "master",
+    [string]$path = "Infrastucture/UserDataDownloads",
     [string]$outFile = ".\$repo\$script"
   )
   if ((test-path $repo) -ne $true) {
     Write-Output "  Creating directory $startupDir\$repo"
     New-Item -ItemType "Directory" -Path $repo
   }
-  $uri = "https://raw.githubusercontent.com/$owner/$repo/$branch/$script"
+  $uri = "https://raw.githubusercontent.com/$owner/$repo/$branch/$path/$script"
   Write-Output "Downloading $script"
   Write-Output "  from: $uri"
   Write-Output "  to: $outFile"
