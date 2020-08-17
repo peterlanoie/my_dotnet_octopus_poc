@@ -48,7 +48,7 @@ function Download-File
 # is hosted somewhere else, I need to know the public-facing IP address. 
 function Get-MyPublicIPAddress
 {
-  Write-Output "    Getting public IP address"
+  Write-Host "    Getting public IP address" # Important: Use Write-Host here, not Write-output!
   $downloader = new-object System.Net.WebClient
   $ip = $downloader.DownloadString("http://ifconfig.me/ip")
   return $ip
