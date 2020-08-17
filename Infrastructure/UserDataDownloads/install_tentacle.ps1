@@ -27,7 +27,7 @@ function get-secret(){
 # https://gist.github.com/PaulStovell/7747107#file-provision-ps1
 
 $octopusServerThumbprint = Get-Secret -secret "OCTOPUS_THUMBPRINT"
-$yourApiKey = Get-Secret -secret "OCTOPUS_APIKEY"
+$apiKey = Get-Secret -secret "OCTOPUS_APIKEY"
 
 # More about this script:
 # https://gist.github.com/PaulStovell/7747107#file-provision-ps1
