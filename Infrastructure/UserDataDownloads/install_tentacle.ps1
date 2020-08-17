@@ -136,4 +136,4 @@ function Install-Tentacle
 }
 
 # Installing the Octopus Tentacle
-Install-Tentacle -apikey $yourApiKey -octopusServerUrl $octopusServerUrl -environment $registerInEnvironments -role $registerInRoles
+Install-Tentacle -apikey $apiKey -octopusServerUrl $octopusServerUrl -environment $registerInEnvironments -role $registerInRoles
