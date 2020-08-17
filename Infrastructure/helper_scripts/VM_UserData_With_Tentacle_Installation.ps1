@@ -39,14 +39,14 @@ Write-Output "Executing ./my_dotnet_octopus_poc/setup_users.ps1"
 ./my_dotnet_octopus_poc/setup_users.ps1
 
 Write-Output "*"
-Get-Script -script "setup_dotnet_core.ps1"
-Write-Output "Executing ./my_dotnet_octopus_poc/setup_dotnet_core.ps1"
-./my_dotnet_octopus_poc/setup_dotnet_core.ps1
-
-Write-Output "*"
 Get-Script -script "setup_iis.ps1"
 Write-Output "Executing ./my_dotnet_octopus_poc/setup_iis.ps1"
 ./my_dotnet_octopus_poc/setup_iis.ps1
+
+Write-Output "*"
+Get-Script -script "setup_dotnet_core.ps1"
+Write-Output "Executing ./my_dotnet_octopus_poc/setup_dotnet_core.ps1"
+./my_dotnet_octopus_poc/setup_dotnet_core.ps1
 
 $octopusServerUrl = "__OCTOPUSURL__"
 $registerInEnvironments = "__ENV__"
