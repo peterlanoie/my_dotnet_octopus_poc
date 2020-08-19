@@ -65,7 +65,9 @@ jobs:
         sudo apt update && sudo apt install octopuscli
     
     - name: Pack
-      run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$PACKAGE_VERSION-{{ steps.extract_branch.outputs.branch }}
+      env: 
+        BRANCH: ${{ steps.extract_branch.outputs.branch }}
+      run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$PACKAGE_VERSION-$BRANCH
     
     - name: Handoff to Octopus Deploy
       env:
