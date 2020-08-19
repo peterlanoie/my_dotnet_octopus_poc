@@ -2,10 +2,10 @@ param(
     $count = 1,
     $instanceType = "t2.micro", # 1 vCPU, 1GiB Mem, free tier elligible: https://aws.amazon.com/ec2/instance-types/
     $ami = "ami-0216167faf008006e", # Microsoft Windows Server 2019 Base with Containers
-    $tagName = "octo_demobox",
-    $tagValue = (Get-Date -Format "yyyy-MM-dd - HH:mm:ss"),
-    $octoUrl = $OctopusParameters["Octopus.Web.ServerUri"],
-    $octoEnv = $OctopusParameters["Octopus.Environment.Name"],
+    $tagName = "RandomQuotes",
+    $tagValue = "Created manually",
+    $octoUrl = "",
+    $octoEnv = "",
     [Switch]$DeployTentacle
 )
 
@@ -14,19 +14,52 @@ $ErrorActionPreference = "Stop"
 Write-Output "Installed AWS tools version:"
 Get-AWSPowerShellVersion
 
-# Preparing startup script for VM
-if ($DeployTentacle){
-    $userDataFile = "VM_UserData_With_Tentacle_Installation.ps1"
+# Setting default values for octoEnv, octoUrl and tagValue
+try {
+    if ($octoUrl -like ""){
+        $msg = "Octopus URL detected: " + $OctopusParameters["Octopus.Web.ServerUri"]
+        Write-Output $msg
+        $octoUrl = $OctopusParameters["Octopus.Web.ServerUri"]
+    }
 }
-else {
-    $userDataFile = "VM_UserData.ps1"
+catch {
+    if ($DeployTentacle){
+        $DeployTentacle = $false
+        Write-Warning "No Octopus URL detected. Cannot deploy the Tentacle"
+    }
 }
+
+try {
+    if ($octoEnv -like ""){
+        $msg = "Octopus Environment detected: " + $OctopusParameters["Octopus.Environment.Name"]
+        Write-Output $msg
+        $octoEnv = $OctopusParameters["Octopus.Environment.Name"]
+        if ($tagValue -like "Created manually"){
+            $tagValue = $octoEnv
+        }
+    }
+}
+catch {
+    if ($DeployTentacle){
+        $DeployTentacle = $false
+        Write-Warning "No Octopus Environment detected. Cannot deploy the Tentacle"
+    }
+}
+
+# Reading VM_UserData
+$userDataFile = "VM_UserData.ps1"
 $userDataPath = "$PSScriptRoot\$userDataFile"
 $userData = Get-Content -Path $userDataPath -Raw
 
-# Variable substitution for UserData script
-$userData = $userData.replace("__OCTOPUSURL__",$octoUrl)
-$userData = $userData.replace("__ENV__",$octoEnv)
+# Preparing startup script for VM
+if ($DeployTentacle){
+    # If deploying tentacle, uncomment the deploy tentacle script
+    $userData = $userData.replace("<# DEPLOY TENTACLE"," ")
+    $userData = $userData.replace("DEPLOY TENTACLE #>"," ")
+    # And substitute the octopus URL and environment
+    $userData = $userData.replace("__OCTOPUSURL__",$octoUrl)
+    $userData = $userData.replace("__ENV__",$octoEnv)
+}
 
 if (Test-Path $userDataPath){
     Write-Output "    Reading UserData (VM startup script) from $userDataPath."
@@ -40,7 +73,7 @@ Write-Output "    Base 64 encoding UserData."
 $encodedUserData = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($userData))
 
 # Checking how many instances are already running
-Write-Output "    Checking how many instances are already running..."
+Write-Output "    Checking how many instances are already running with tag $tagName and value $tagValue..."
 $acceptableStates = @("pending", "running")
 $PreExistingInstances = (Get-EC2Instance -Filter @{Name="tag:$tagName";Values=$tagValue}, @{Name="instance-state-name";Values=$acceptableStates}).Instances 
 $before = $PreExistingInstances.count

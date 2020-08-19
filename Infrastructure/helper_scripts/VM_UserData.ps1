@@ -1,25 +1,60 @@
 <powershell>
+$ErrorActionPreference = "stop"
+
+$startupDir = "C:\Startup"
+if ((test-path $startupDir) -ne $true) {
+  New-Item -ItemType "Directory" -Path $startupDir
+}
+
+Set-Location $startupDir
+
 # If for whatever reason this doesn't work, check this file:
-$log = "C:\StartupLog.txt"
+$log = ".\StartupLog.txt"
 Write-Output " Creating log file at $log"
 Start-Transcript -path $log -append
 
-# Creating RDP and Octopus users
-Write-Output "Creating users"
-$rdpUser = "student"
-$rdpPwd = ConvertTo-SecureString "D3vOpsRocks!" -AsPlainText -Force
-$octoUser = "octopus"
-$octoPwd = ConvertTo-SecureString "5re4lsoRocks!" -AsPlainText -Force
-function create-user {
-    param ($user, $password)
-    Write-Output "    Creating a user for RDP sessions: $user."
-    New-LocalUser -Name $user -Password $password -AccountNeverExpires | out-null
-    Write-Output "    Making $user an admin."
-    Add-LocalGroupMember -Group "Administrators" -Member $user
+Function Get-Script{
+  param (
+    [Parameter(Mandatory=$true)][string]$script,
+    [string]$owner = "dlmconsultants",
+    [string]$repo = "my_dotnet_octopus_poc",
+    [string]$branch = "main",
+    [string]$path = "Infrastructure/UserDataDownloads",
+    [string]$outFile = ".\$repo\$script"
+  )
+  if ((test-path $repo) -ne $true) {
+    Write-Output "  Creating directory $startupDir\$repo"
+    New-Item -ItemType "Directory" -Path $repo
+  }
+  $uri = "https://raw.githubusercontent.com/$owner/$repo/$branch/$path/$script"
+  Write-Output "Downloading $script"
+  Write-Output "  from: $uri"
+  Write-Output "  to: $outFile"
+  Invoke-WebRequest -Uri $uri -OutFile $outFile -Verbose
 }
-create-user -user $rdpUser -password $rdpPwd
-create-user -user $octoUser -password $octoPwd
 
-Write-Output "Enabling Web-Server role for hosting websites"
-Install-WindowsFeature -name Web-Server -IncludeManagementTools
+Write-Output "*"
+Get-Script -script "setup_users.ps1"
+Write-Output "Executing ./my_dotnet_octopus_poc/setup_users.ps1"
+./my_dotnet_octopus_poc/setup_users.ps1
+
+Write-Output "*"
+Get-Script -script "setup_iis.ps1"
+Write-Output "Executing ./my_dotnet_octopus_poc/setup_iis.ps1"
+./my_dotnet_octopus_poc/setup_iis.ps1
+
+Write-Output "*"
+Get-Script -script "setup_dotnet_core.ps1"
+Write-Output "Executing ./my_dotnet_octopus_poc/setup_dotnet_core.ps1"
+./my_dotnet_octopus_poc/setup_dotnet_core.ps1
+
+<# DEPLOY TENTACLE
+$octopusServerUrl = "__OCTOPUSURL__"
+$registerInEnvironments = "__ENV__"
+
+Write-Output "*"
+Get-Script -script "install_tentacle.ps1"
+Write-Output "Executing ./my_dotnet_octopus_poc/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments"
+./my_dotnet_octopus_poc/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments
+DEPLOY TENTACLE #>
 </powershell>
