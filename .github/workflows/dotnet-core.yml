@@ -70,5 +70,5 @@ jobs:
     - name: Handoff to Octopus Deploy
       env:
         OCTOPUS_URL: ${{ secrets.OCTOPUS_SERVER_URL }}
-        OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY }}        
-      run: octo push --package="$ARTIFACTS_FOLDER/$PACKAGE_NAME.$PACKAGE_VERSION-{{ steps.extract_branch.outputs.branch }}.nupkg" --server=$OCTOPUS_URL --apiKey=$OCTOPUS_API_KEY --space=$OCTOPUS_SPACE_NAME
+        OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY }}
+      run: octo push --package="$ARTIFACTS_FOLDER/$PACKAGE_NAME.$PACKAGE_VERSION-${{ steps.extract_branch.outputs.branch }}.nupkg" --server=$OCTOPUS_URL --apiKey=$OCTOPUS_API_KEY --space=$OCTOPUS_SPACE_NAME
