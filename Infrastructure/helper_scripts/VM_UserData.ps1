@@ -57,4 +57,6 @@ Get-Script -script "install_tentacle.ps1"
 Write-Output "Executing ./my_dotnet_octopus_poc/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments"
 ./my_dotnet_octopus_poc/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments
 DEPLOY TENTACLE #>
+
+Write-Output "VM_UserData startup script completed..."
 </powershell>
