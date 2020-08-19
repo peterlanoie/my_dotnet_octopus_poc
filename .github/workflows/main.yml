@@ -40,7 +40,8 @@ jobs:
       run: |        
         $versionFromFile = Get-Content versionprefix.txt 
         Write-Host "Found $versionFromFile in versionprefix.md"
-        $versionNumber = "$versionfromFile.${env:GITHUB_RUN_NUMBER}"
+        $branchName = "${{github.ref}}".Split("/")["${{github.ref}}".Split("/").Length -1]
+        $versionNumber = "$versionfromFile.${env:GITHUB_RUN_NUMBER}-$branchName"
         Write-Host "Setting environment version number to: $versionNumber"
 
         echo "::set-env name=PACKAGE_VERSION::$versionNumber"        
