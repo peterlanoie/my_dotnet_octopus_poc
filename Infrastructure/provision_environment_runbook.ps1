@@ -50,7 +50,7 @@ catch {
 }
 
 # If no default tag has been provided, but we do have an octoEnv, set tagValue to octoEnv
-if (($tagValue -like "Created manually") -and (-OctoEnv -notlike "") ){
+if (($tagValue -like "Created manually") -and ($OctoEnv -notlike "") ){
     $tagValue = $octoEnv
 }
 
