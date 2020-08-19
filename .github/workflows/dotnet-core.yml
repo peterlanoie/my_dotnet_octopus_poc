@@ -38,7 +38,10 @@ jobs:
         echo PACKAGE_NAME is: $PACKAGE_NAME
         echo OCTOPUS_PROJECT_NAME is: $OCTOPUS_PROJECT_NAME
         echo OCTOPUS_SPACE_NAME is: $OCTOPUS_SPACE_NAME 
-          
+    
+    - name: extract_branch
+      run: echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
+      
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -61,10 +64,10 @@ jobs:
         sudo apt update && sudo apt install octopuscli
     
     - name: Pack
-      run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$PACKAGE_VERSION
+      run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$PACKAGE_VERSION-{{ steps.extract_branch.outputs.branch }}
     
     - name: Handoff to Octopus Deploy
       env:
         OCTOPUS_URL: ${{ secrets.OCTOPUS_SERVER_URL }}
         OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY }}        
-      run: octo push --package="$ARTIFACTS_FOLDER/$PACKAGE_NAME.$PACKAGE_VERSION.nupkg" --server=$OCTOPUS_URL --apiKey=$OCTOPUS_API_KEY --space=$OCTOPUS_SPACE_NAME
+      run: octo push --package="$ARTIFACTS_FOLDER/$PACKAGE_NAME.$PACKAGE_VERSION-{{ steps.extract_branch.outputs.branch }}.nupkg" --server=$OCTOPUS_URL --apiKey=$OCTOPUS_API_KEY --space=$OCTOPUS_SPACE_NAME
