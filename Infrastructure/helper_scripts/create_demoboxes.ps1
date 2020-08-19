@@ -14,38 +14,6 @@ $ErrorActionPreference = "Stop"
 Write-Output "Installed AWS tools version:"
 Get-AWSPowerShellVersion
 
-# Setting default values for octoEnv, octoUrl and tagValue
-try {
-    if ($octoUrl -like ""){
-        $msg = "Octopus URL detected: " + $OctopusParameters["Octopus.Web.ServerUri"]
-        Write-Output $msg
-        $octoUrl = $OctopusParameters["Octopus.Web.ServerUri"]
-    }
-}
-catch {
-    if ($DeployTentacle){
-        $DeployTentacle = $false
-        Write-Warning "No Octopus URL detected. Cannot deploy the Tentacle"
-    }
-}
-
-try {
-    if ($octoEnv -like ""){
-        $msg = "Octopus Environment detected: " + $OctopusParameters["Octopus.Environment.Name"]
-        Write-Output $msg
-        $octoEnv = $OctopusParameters["Octopus.Environment.Name"]
-        if ($tagValue -like "Created manually"){
-            $tagValue = $octoEnv
-        }
-    }
-}
-catch {
-    if ($DeployTentacle){
-        $DeployTentacle = $false
-        Write-Warning "No Octopus Environment detected. Cannot deploy the Tentacle"
-    }
-}
-
 # Reading VM_UserData
 $userDataFile = "VM_UserData.ps1"
 $userDataPath = "$PSScriptRoot\$userDataFile"

@@ -6,11 +6,11 @@ param(
     $count = 1,
     $instanceType = "t2.micro", # 1 vCPU, 1GiB Mem, free tier elligible: https://aws.amazon.com/ec2/instance-types/
     $ami = "ami-0216167faf008006e", # Microsoft Windows Server 2019 Base with Containers
-    $tagName = "octo_demobox",
-    $tagValue = (Get-Date -Format "yyyy-MM-dd - HH:mm:ss"),
+    $tagName = "RandomQuotes",
+    $tagValue = "Created manually",
     $octoUrl = "",
     $octoEnv = "",
-    [Switch]$runLocally 
+    [Switch]$DeployTentacle
 )
 
 $ErrorActionPreference = "Stop"  
@@ -19,24 +19,37 @@ Write-Output "*"
 Write-Output "Setup..."
 Write-Output "*"
 
-# Making it easier to run this locally for testing
-if ($runLocally) {
-    if ($octoUrl -like ""){
-        Write-Error "  Please provide a value for octoUrl."
+# If (this script it executed by Octopus AND $DeployTentacle is true):
+# Updating default values for octoEnv, octoUrl and tagValue
+if ($DeployTentacle){
+    try {
+        if ($octoUrl -like ""){
+            $msg = "Octopus URL detected: " + $OctopusParameters["Octopus.Web.ServerUri"]
+            Write-Output $msg
+            $octoUrl = $OctopusParameters["Octopus.Web.ServerUri"]
+        }
     }
-    if ($octoEnv -like ""){
-        $octoEnv = "Dev"
-        Write-Output "  No value provided for octoEnv. Defaulting to: $octoEnv"
+    catch {
+        if ($DeployTentacle){
+            $DeployTentacle = $false
+            Write-Warning "No Octopus URL detected. Cannot deploy the Tentacle"
+        }
     }
-}
-else {
-    if ($octoUrl -like ""){
-        $octoUrl = $OctopusParameters["Octopus.Web.ServerUri"]
-        Write-Output "  Setting octoUrl to: $octoUrl"
+
+    try {
+        if ($octoEnv -like ""){
+            $msg = "Octopus Environment detected: " + $OctopusParameters["Octopus.Environment.Name"]
+            Write-Output $msg
+            $octoEnv = $OctopusParameters["Octopus.Environment.Name"]
+            if ($tagValue -like "Created manually"){
+                $tagValue = $octoEnv
+            }
+        }
     }
-    if ($octoEnv -like ""){
-        $octoEnv = $OctopusParameters["Octopus.Environment.Name"]
-        Write-Output "  Setting octoEnv to: $octoEnv"
+    catch {
+        $DeployTentacle = $false
+        Write-Warning "No Octopus Environment detected. Cannot deploy the Tentacle"
+        
     }
 }
 
@@ -63,6 +76,6 @@ Write-Output "*"
 
 # Creates the VMs
 Write-Output "Executing .\helper_scripts\create_demoboxes.ps1..."
-Write-Output "  Parameters: -count $count -instanceType $instanceType -ami $ami -tagName $tagName -tagValue $tagValue"
-& $PSScriptRoot\helper_scripts\create_demoboxes.ps1 -count $count -instanceType $instanceType -ami $ami -tagName $tagName -tagValue $tagValue -octoUrl $octoUrl -octoEnv $octoEnv -DeployTentacle
+Write-Output "  Parameters: -count $count -instanceType $instanceType -ami $ami -tagName $tagName -tagValue $tagValue -octoUrl $octoUrl -octoEnv $octoEnv -DeployTentacle:$DeployTentacle"
+& $PSScriptRoot\helper_scripts\create_demoboxes.ps1 -count $count -instanceType $instanceType -ami $ami -tagName $tagName -tagValue $tagValue -octoUrl $octoUrl -octoEnv $octoEnv -DeployTentacle:$DeployTentacle
 Write-Output "*"
