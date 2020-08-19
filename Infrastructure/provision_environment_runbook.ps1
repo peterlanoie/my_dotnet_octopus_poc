@@ -35,23 +35,25 @@ if ($DeployTentacle){
             Write-Warning "No Octopus URL detected. Cannot deploy the Tentacle"
         }
     }
+}
 
-    try {
-        if ($octoEnv -like ""){
-            $msg = "Octopus Environment detected: " + $OctopusParameters["Octopus.Environment.Name"]
-            Write-Output $msg
-            $octoEnv = $OctopusParameters["Octopus.Environment.Name"]
-            if ($tagValue -like "Created manually"){
-                $tagValue = $octoEnv
-            }
-        }
-    }
-    catch {
-        $DeployTentacle = $false
-        Write-Warning "No Octopus Environment detected. Cannot deploy the Tentacle"
-        
+try {
+    if ($octoEnv -like ""){
+        $msg = "Octopus Environment detected: " + $OctopusParameters["Octopus.Environment.Name"]
+        Write-Output $msg
+        $octoEnv = $OctopusParameters["Octopus.Environment.Name"]
     }
 }
+catch {
+    $DeployTentacle = $false
+    Write-Warning "No Octopus Environment detected. Cannot deploy the Tentacle"
+}
+
+# If no default tag has been provided, but we do have an octoEnv, set tagValue to octoEnv
+if (($tagValue -like "Created manually") -and (-OctoEnv -notlike "") ){
+    $tagValue = $octoEnv
+}
+
 
 Write-Output "  Execution root dir: $PSScriptRoot"
 Write-Output "*"
