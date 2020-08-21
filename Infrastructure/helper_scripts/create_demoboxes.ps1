@@ -169,10 +169,10 @@ if ($Wait){
             $NumRegistered = $MachinesInRole.Count
             
             if ($NumRegistered -gt $machines.Count){
-                ForEach ($machine in $MachinesInRole){
-                    if ($machine.Name -notin $machines){
-                        $name = $machine.Name
-                        $uri = $machine.URI
+                ForEach ($m in $MachinesInRole){
+                    if ($m.Name -notin $machines.Name){
+                        $name = $m.Name
+                        $uri = $m.URI
                         Write-Output "        Machine $name registered with URI $uri"
                         $machines += $name
                     }
