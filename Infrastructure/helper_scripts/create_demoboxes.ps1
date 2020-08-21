@@ -6,7 +6,9 @@ param(
     $tagValue = "Created manually",
     $octoUrl = "",
     $octoEnv = "",
-    [Switch]$DeployTentacle
+    [Switch]$DeployTentacle,
+    [Switch]$Wait,
+    $timeout = 1200 # seconds
 )
 
 $ErrorActionPreference = "Stop"
@@ -94,4 +96,42 @@ if ($oops){
 } else {
     $msg = "    " + $instances.count + " instances running successfully."
     Write-Output $msg
+}
+
+if ($Wait){
+    $allRunning = $false
+    $allRegistered = $false
+    $runningWarningGiven = $false
+    $registeredWarningGiven = $false
+    $ipAddresses = @()
+
+    $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
+    
+    While (-not $allRunning){
+        $time = [Math]::Floor([decimal]($stopwatch.Elapsed.TotalSeconds))
+        
+        if ($time -gt $timeout){
+            Write-Error "Timed out at $time seconds. Timeout currently set to $timeout seconds. There is a parameter on this script to adjust the default timeout."
+        }
+        
+        if (($time -gt 120) -and (-not $warningGiven)){
+            Write-Warning "EC2 instances are taking an unusually long time to start."
+            $runningWarningGiven = $true
+        }
+        
+        $runningInstances = (Get-EC2Instance -Filter @{Name="tag:$tagName";Values=$tagValue}, @{Name="instance-state-name";Values="running"}).Instances
+        $NumRunning = $runningInstances.count
+        
+        if ($NumRunning -eq $count){
+            $allRunning = $true
+            Write-Output "$time seconds: All instances running."
+            $ipAddresses = $runningInstances.PublicIpAddress
+            Write-Output "Public IP Addresses:"
+            Write-Output $ipAddresses
+        }
+        else {
+            Write-Output "$time seconds: $NumRunning out of $count instances are running."
+        }
+        Start-Sleep -s 10
+    }
 }
