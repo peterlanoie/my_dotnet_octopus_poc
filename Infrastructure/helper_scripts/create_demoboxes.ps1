@@ -127,10 +127,12 @@ if ($Wait){
                 $ip = $instance.PublicIpAddress
                 Write-Output "        Instance $id is available at the public IP: $ip"
             }
+            break
         }
         else {
             Write-Output "      $time seconds: $NumRunning out of $count instances are running."
         }
+
         Start-Sleep -s 10
     }
     
@@ -183,6 +185,7 @@ if ($Wait){
                 Write-Output "      $time seconds: SUCCESS! All $count machines are registered!"
                 Write-Output "        Machine names:"
                 Write-Output $machines.Name
+                break
             }
             else {
                 Write-Output "      $time seconds: $NumRegistered out of $count instances are registered."
