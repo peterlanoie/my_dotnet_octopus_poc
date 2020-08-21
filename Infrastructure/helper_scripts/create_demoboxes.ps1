@@ -100,7 +100,6 @@ if ($Wait){
     $allRegistered = $false
     $runningWarningGiven = $false
     $registeredWarningGiven = $false
-    $ipAddresses = @()
 
     Write-Output "    Waiting for instances to start. (This normally takes about 30 seconds.)"
     $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
@@ -183,7 +182,7 @@ if ($Wait){
                 $allRegistered = $true
                 Write-Output "      $time seconds: SUCCESS! All $count machines are registered!"
                 Write-Output "        Machine names:"
-                Write-Output $machines
+                Write-Output $machines.Name
             }
             else {
                 Write-Output "      $time seconds: $NumRegistered out of $count instances are registered."
