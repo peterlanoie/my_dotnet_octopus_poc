@@ -139,6 +139,8 @@ if ($Wait){
         $machines = @()
         
         While (-not $allRegistered){
+            $time = [Math]::Floor([decimal]($stopwatch.Elapsed.TotalSeconds))
+
             if ($time -gt $timeout){
                 Write-Error "Timed out at $time seconds. Timeout currently set to $timeout seconds. There is a parameter on this script to adjust the default timeout."
             }
@@ -181,7 +183,7 @@ if ($Wait){
             else {
                 Write-Output "      $time seconds: $NumRegistered out of $count instances are registered."
             }
-            Start-Sleep -s 10
+            Start-Sleep -s 30
         }
     }
 }
