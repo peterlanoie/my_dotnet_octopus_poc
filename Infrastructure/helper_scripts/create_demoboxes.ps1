@@ -13,9 +13,6 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Output "Installed AWS tools version:"
-Get-AWSPowerShellVersion
-
 # Reading VM_UserData
 $userDataFile = "VM_UserData.ps1"
 $userDataPath = "$PSScriptRoot\$userDataFile"
