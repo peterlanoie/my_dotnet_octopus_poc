@@ -114,7 +114,7 @@ if ($Wait){
             Write-Error "Timed out at $time seconds. Timeout currently set to $timeout seconds. There is a parameter on this script to adjust the default timeout."
         }
         
-        if (($time -gt 60) -and (-not $warningGiven)){
+        if (($time -gt 60) -and (-not $runningWarningGiven)){
             Write-Warning "EC2 instances are taking an unusually long time to start."
             $runningWarningGiven = $true
         }
@@ -143,28 +143,28 @@ if ($Wait){
                 Write-Error "Timed out at $time seconds. Timeout currently set to $timeout seconds. There is a parameter on this script to adjust the default timeout."
             }
         
-            if (($time -gt 900) -and (-not $warningGiven)){
+            if (($time -gt 900) -and (-not $registeredWarningGiven)){
                 Write-Warning "Machines are taking an unusually long time to register."
-                $runningWarningGiven = $true
+                $registeredWarningGiven = $true
             }
             
             $APIKey = $OctopusParameters["API_KEY"]
             $Role = "web-server"
         
             # Authenticating to the API
-            $header = @{ "X-Octopus-ApiKey" = $API_Key }
+            $header = @{ "X-Octopus-ApiKey" = $APIKey }
 
             # Calling the API to find get machine data
             $envID = $OctopusParameters["Octopus.Environment.Id"]
             $environment = (Invoke-WebRequest "$octoUrl/api/environments/$envID" -Headers $header).content | ConvertFrom-Json
             $environmentMachines = $Environment.Links.Machines.Split("{")[0]
             $machines = ((Invoke-WebRequest ($octoUrl + $environmentMachines) -Headers $header).content | ConvertFrom-Json).items
-            $MachinesInRole = $machines | ?{$Role -in $_.Roles}
+            $MachinesInRole = $machines | Where-Object {$Role -in $_.Roles}
              
             $NumRegistered = $MachinesInRole.count
             
             if ($NumRegistered -gt $machines.Count){
-                ForEach ($machine -in $MachinesInRole){
+                ForEach ($machine in $MachinesInRole){
                     if ($machine.Name -notin $machines){
                         $name = $machine.Name
                         $uri = $machine.URI
