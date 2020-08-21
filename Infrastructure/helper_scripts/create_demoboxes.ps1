@@ -156,9 +156,9 @@ if ($Wait){
 
             # Calling the API to find get machine data
             $envID = $OctopusParameters["Octopus.Environment.Id"]
-            $environment = (Invoke-WebRequest "$octoUrl/api/environments/$envID" -Headers $header).content | ConvertFrom-Json
+            $environment = (Invoke-WebRequest "$octoUrl/api/environments/$envID" -Headers $header -UseBasicParsing).content | ConvertFrom-Json
             $environmentMachines = $Environment.Links.Machines.Split("{")[0]
-            $machines = ((Invoke-WebRequest ($octoUrl + $environmentMachines) -Headers $header).content | ConvertFrom-Json).items
+            $machines = ((Invoke-WebRequest ($octoUrl + $environmentMachines) -Headers $header -UseBasicParsing).content | ConvertFrom-Json).items
             $MachinesInRole = $machines | Where-Object {$Role -in $_.Roles}
              
             $NumRegistered = $MachinesInRole.count
