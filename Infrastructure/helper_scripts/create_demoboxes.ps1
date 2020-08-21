@@ -102,6 +102,7 @@ if ($Wait){
     $registeredWarningGiven = $false
     $ipAddresses = @()
 
+    Write-Output "    Waiting for instances to start. (This normally takes about 30 seconds.)"
     $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
     
     While (-not $allRunning){
@@ -125,7 +126,7 @@ if ($Wait){
             ForEach ($instance in $runningInstances){
                 $id = $instance.InstanceId
                 $ip = $instance.PublicIpAddress
-                Write-Output "    Instance $id is available at the public IP: $ip"
+                Write-Output "        Instance $id is available at the public IP: $ip"
             }
         }
         else {
@@ -137,7 +138,7 @@ if ($Wait){
     if ($deployTentacle){
         $machines = @()
     
-        Write-Output "    Waiting for machines to register with Octopus Server..."
+        Write-Output "    Waiting for instances to register with Octopus Server. (This normally takes 6 or 7 minutes.)"
         $stopwatch.Restart()
 
         While (-not $allRegistered){
@@ -172,7 +173,7 @@ if ($Wait){
                     if ($machine.Name -notin $machines){
                         $name = $machine.Name
                         $uri = $machine.URI
-                        Write-Output "    Machine $name registered with URI $uri"
+                        Write-Output "        Machine $name registered with URI $uri"
                         $machines += $name
                     }
                 }
