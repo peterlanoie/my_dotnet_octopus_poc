@@ -134,4 +134,54 @@ if ($Wait){
         }
         Start-Sleep -s 10
     }
+    
+    if ($deployTentacle){
+        $machines = @()
+        
+        While (-not $allRegistered){
+            if ($time -gt $timeout){
+                Write-Error "Timed out at $time seconds. Timeout currently set to $timeout seconds. There is a parameter on this script to adjust the default timeout."
+            }
+        
+            if (($time -gt 900) -and (-not $warningGiven)){
+                Write-Warning "Machines are taking an unusually long time to register."
+                $runningWarningGiven = $true
+            }
+            
+            $APIKey = $OctopusParameters["API_KEY"]
+            $Role = "web-server"
+        
+            # Authenticating to the API
+            $header = @{ "X-Octopus-ApiKey" = $API_Key }
+
+            # Calling the API to find get machine data
+            $envID = $OctopusParameters["Octopus.Environment.Id"]
+            $environment = (Invoke-WebRequest "$octoUrl/api/environments/$envID" -Headers $header).content | ConvertFrom-Json
+            $environmentMachines = $Environment.Links.Machines.Split("{")[0]
+            $machines = ((Invoke-WebRequest ($octoUrl + $environmentMachines) -Headers $header).content | ConvertFrom-Json).items
+            $MachinesInRole = $machines | ?{$Role -in $_.Roles}
+             
+            $NumRegistered = $MachinesInRole.count
+            
+            if ($NumRegistered -gt $machines.Count){
+                ForEach ($machine -in $MachinesInRole){
+                    if ($machine.Name -notin $machines){
+                        $name = $machine.Name
+                        $uri = $machine.URI
+                        Write-Output "    Machine $name registered with URI $uri"
+                        $machines += $name
+                    }
+                }
+            }
+        
+            if ($NumRegistered -eq $count){
+                $allRegistered = $true
+                Write-Output "    SUCCESS!: All machines are registered!"
+            }
+            else {
+                Write-Output "      $time seconds: $NumRegistered out of $count instances are registered."
+            }
+            Start-Sleep -s 10
+        }
+    }
 }
