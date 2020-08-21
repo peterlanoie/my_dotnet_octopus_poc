@@ -145,7 +145,7 @@ if ($Wait){
                 Write-Error "Timed out at $time seconds. Timeout currently set to $timeout seconds. There is a parameter on this script to adjust the default timeout."
             }
         
-            if (($time -gt 900) -and (-not $registeredWarningGiven)){
+            if (($time -gt 600) -and (-not $registeredWarningGiven)){
                 Write-Warning "Machines are taking an unusually long time to register."
                 $registeredWarningGiven = $true
             }
@@ -163,7 +163,7 @@ if ($Wait){
             $machines = ((Invoke-WebRequest ($octoUrl + $environmentMachines) -Headers $header -UseBasicParsing).content | ConvertFrom-Json).items
             $MachinesInRole = $machines | Where-Object {$Role -in $_.Roles}
              
-            $NumRegistered = $MachinesInRole.count
+            $NumRegistered = $MachinesInRole.Count
             
             if ($NumRegistered -gt $machines.Count){
                 ForEach ($machine in $MachinesInRole){
@@ -179,6 +179,8 @@ if ($Wait){
             if ($NumRegistered -eq $count){
                 $allRegistered = $true
                 Write-Output "    SUCCESS!: All machines are registered!"
+                Write-Output "    Machine names:"
+                Write-Output $machines
             }
             else {
                 Write-Output "      $time seconds: $NumRegistered out of $count instances are registered."
