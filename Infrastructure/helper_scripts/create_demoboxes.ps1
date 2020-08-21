@@ -94,7 +94,7 @@ if ($instances.count -ne $count){
 if ($oops){
     Write-Error $err
 } else {
-    $msg = "    " + $instances.count + " instances running successfully."
+    $msg = "    " + $instances.count + " instances have been launched successfully."
     Write-Output $msg
 }
 
@@ -114,7 +114,7 @@ if ($Wait){
             Write-Error "Timed out at $time seconds. Timeout currently set to $timeout seconds. There is a parameter on this script to adjust the default timeout."
         }
         
-        if (($time -gt 120) -and (-not $warningGiven)){
+        if (($time -gt 60) -and (-not $warningGiven)){
             Write-Warning "EC2 instances are taking an unusually long time to start."
             $runningWarningGiven = $true
         }
@@ -124,13 +124,13 @@ if ($Wait){
         
         if ($NumRunning -eq $count){
             $allRunning = $true
-            Write-Output "$time seconds: All instances running."
+            Write-Output "    All instances running."
             $ipAddresses = $runningInstances.PublicIpAddress
-            Write-Output "Public IP Addresses:"
+            Write-Output "    Public IP Addresses:"
             Write-Output $ipAddresses
         }
         else {
-            Write-Output "$time seconds: $NumRunning out of $count instances are running."
+            Write-Output "      $time seconds: $NumRunning out of $count instances are running."
         }
         Start-Sleep -s 10
     }
