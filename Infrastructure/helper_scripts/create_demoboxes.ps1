@@ -124,10 +124,12 @@ if ($Wait){
         
         if ($NumRunning -eq $count){
             $allRunning = $true
-            Write-Output "    All instances running."
-            $ipAddresses = $runningInstances.PublicIpAddress
-            Write-Output "    Public IP Addresses:"
-            Write-Output $ipAddresses
+            Write-Output "      $time seconds: All instances are running!"
+            ForEach ($instance in $runningInstances){
+                $id = $instance.InstanceId
+                $ip = $instance.PublicIpAddress
+                Write-Output "    Instance $id is available at the public IP: $ip"
+            }
         }
         else {
             Write-Output "      $time seconds: $NumRunning out of $count instances are running."
@@ -137,7 +139,10 @@ if ($Wait){
     
     if ($deployTentacle){
         $machines = @()
-        
+    
+        Write-Output "    Waiting for machines to register with Octopus Server..."
+        $stopwatch.Restart()
+
         While (-not $allRegistered){
             $time = [Math]::Floor([decimal]($stopwatch.Elapsed.TotalSeconds))
 
