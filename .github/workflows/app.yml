@@ -67,7 +67,6 @@ jobs:
           echo "This branch is not main. Adding prerelease suffix to NuGet version number."
         fi
         echo "##[set-output name=SUFFIX;]$SUFFIX"
-      id: extract_branch
       
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
