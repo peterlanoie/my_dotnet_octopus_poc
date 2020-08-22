@@ -1,6 +1,8 @@
 param(
     $project = "RandomQuotes",
-    $role = "web-server",
+    $role = "web-server", # Note, in future we will migrate to roles in format "RandomQuotes-web"
+                          # When that happens we can infer role from $project and kill all machines
+                          # That match the pattern "$project-*"
     $octoUrl = "",
     $octoEnvId = "",
     $octoApiKey = ""
@@ -50,6 +52,8 @@ if ($missingParams.Count -gt 0){
     Write-Error $errorMessage
 }
 
+$octoApiHeader = @{ "X-Octopus-ApiKey" = $octoApiKey }
+
 Write-Output "project is : $project"
 Write-Output "octoUrl is : $octoUrl"
 Write-Output "octoEnvId is : $octoEnvId"
@@ -66,10 +70,9 @@ function Get-Instances {
 
 function Get-Targets {
     # Calling the Octopus API to find target machines
-    $header = @{ "X-Octopus-ApiKey" = $APIKey }
-    $environment = (Invoke-WebRequest "$octoUrl/api/environments/$octoEnvId" -Headers $header -UseBasicParsing).content | ConvertFrom-Json
+    $environment = (Invoke-WebRequest "$octoUrl/api/environments/$octoEnvId" -Headers $octoApiHeader -UseBasicParsing).content | ConvertFrom-Json
     $environmentMachines = $environment.Links.Machines.Split("{")[0]
-    $machines = ((Invoke-WebRequest ($octoUrl + $environmentMachines) -Headers $header -UseBasicParsing).content | ConvertFrom-Json).items
+    $machines = ((Invoke-WebRequest ($octoUrl + $environmentMachines) -Headers $octoApiHeader -UseBasicParsing).content | ConvertFrom-Json).items
     $targets = $machines | Where-Object {$role -in $_.Roles}
     return $targets
 }
@@ -82,3 +85,37 @@ $targetsToKill = Get-Targets
 $numOfTargetsToKill = $targetsToKill.Count
 Write-Output "Number of targets to kill: $numOfTargetsToKill" 
 
+if ($numOfInstancesToKill -ne 0){
+    # Using AWS PowerShell to kill all the target instances
+    ForEach ($instance in $instancesToKill){
+        $id = $instance.id
+        Write-Output "Removing instance $id"
+        Remove-EC2Instance -InstanceId $id
+    }
+    
+    # Verifying that all instances are dead
+    $remainingInstances = Get-Instances
+    $numOfInstancesToKill = $remainingInstances.Count
+    Write-Output "Number of remaining instances: $numOfInstancesToKill" 
+}
+
+if ($numOfTargetsToKill -ne 0){
+    # Killing all the targerts using the Octo API
+    ForEach ($target in $targetsToKill){
+        $id = $target.id
+        Write-Output "Removing target $id"
+        Invoke-RestMethod -Uri "$octoUrl/api/machines/$id" -Headers $octoApiHeader -Method Delete
+    }
+
+    # Verifying that all targets are dead
+    $remainingTargetsToKill = Get-Targets
+    $numOfTargetsToKill = $remainingTargetsToKill.Count
+    Write-Output "Number of targets to kill: $numOfTargetsToKill" 
+}
+
+if (($numOfInstancesToKill -ne 0) -or ($numOfTargetsToKill -ne 0)){
+    Write-Error "Not all the EC2 instances / Octopus target manchines have been successfully killed."
+}
+else {
+    Write-Host "SUCCESS! All EC2 instances and Octopus target manchines for project $project in environment $octoEnv have been killed."
+}
