@@ -93,13 +93,10 @@ jobs:
         sudo apt update && sudo apt install octopuscli
     
     - name: Pack
-      env: 
-        SUFFIX: ${{ steps.create_suffix.outputs.suffix }}
       run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$PACKAGE_VERSION$SUFFIX
     
     - name: Handoff to Octopus Deploy
       env:
         OCTOPUS_URL: ${{ secrets.OCTOPUS_SERVER_URL }}
         OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY }}
-        SUFFIX: ${{ steps.create_suffix.outputs.suffix }}
       run: octo push --package="$ARTIFACTS_FOLDER/$PACKAGE_NAME.$PACKAGE_VERSION$SUFFIX.nupkg" --server=$OCTOPUS_URL --apiKey=$OCTOPUS_API_KEY --space=$OCTOPUS_SPACE_NAME
