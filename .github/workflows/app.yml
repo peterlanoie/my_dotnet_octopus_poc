@@ -57,7 +57,7 @@ jobs:
     # More info: https://docs.microsoft.com/en-us/nuget/create-packages/prerelease-packages#:~:text=To%20support%20the%20software%20release,%2Dbeta%20%2C%20or%20%2Drc%20.
     - name: Set prerelease suffix
       run: |
-        echo 'The branch name is' $BRANCH_NAME
+        echo 'The branch name is:' $BRANCH_NAME
         SUFFIX=""
         if [$BRANCH_NAME == "main"]
         then
@@ -66,7 +66,8 @@ jobs:
           NUGETSUFFIX="-$BRANCH_NAME"
           echo "This branch is not main. Adding prerelease suffix to NuGet version number."
         fi
-        echo "##[set-output name=SUFFIX;]$NUGETSUFFIX"
+        echo 'The suffix is:' $NUGETSUFFIX
+        echo "::set-env name=SUFFIX::$(echo $NUGETSUFFIX)"
       id: create_suffix
       
     - name: Setup .NET Core
@@ -92,12 +93,12 @@ jobs:
     
     - name: Pack
       env: 
-        SUFFIX: ${{ steps.create_suffix.outputs.nugetsuffix }}
+        SUFFIX: ${{ steps.create_suffix.outputs.suffix }}
       run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$PACKAGE_VERSION$SUFFIX
     
     - name: Handoff to Octopus Deploy
       env:
         OCTOPUS_URL: ${{ secrets.OCTOPUS_SERVER_URL }}
         OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY }}
-        SUFFIX: ${{ steps.create_suffix.outputs.nugetsuffix }}
+        SUFFIX: ${{ steps.create_suffix.outputs.suffix }}
       run: octo push --package="$ARTIFACTS_FOLDER/$PACKAGE_NAME.$PACKAGE_VERSION$SUFFIX.nupkg" --server=$OCTOPUS_URL --apiKey=$OCTOPUS_API_KEY --space=$OCTOPUS_SPACE_NAME
