@@ -40,15 +40,31 @@ jobs:
         echo PACKAGE_NAME is: $PACKAGE_NAME
         echo OCTOPUS_PROJECT_NAME is: $OCTOPUS_PROJECT_NAME
         echo OCTOPUS_SPACE_NAME is: $OCTOPUS_SPACE_NAME 
-    
-    - name: extract_branch
+        
+    # extract branch name
+    - name: Extract branch name
+      if: github.event_name != 'pull_request'
+      shell: bash
+      run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+
+    # extract branch name on pull request
+    - name: Clean branch name for pull requests
+      if: github.event_name == 'pull_request'
+      run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_HEAD_REF})"
+
+    # Setting a prerelease suffix if not main branch
+    # More info: https://docs.microsoft.com/en-us/nuget/create-packages/prerelease-packages#:~:text=To%20support%20the%20software%20release,%2Dbeta%20%2C%20or%20%2Drc%20.
+    - name: Set prerelease suffix
       run: |
-        BRANCH=${GITHUB_REF#refs/heads/}
+        echo 'The branch name is' $BRANCH_NAME
         SUFFIX=""
-        if [BRANCH = "main"]
+        if [$BRANCH_NAME = "main"]
         then
-          SUFFIX="-$BRANCH"
-          echo "This branch is not main. Andding prerelease suffix to NuGet version number"
+          echo "This branch is main. No prerelease suffix required."
+        else
+          SUFFIX="-$BRANCH_NAME"
+          echo "This branch is not main. Adding prerelease suffix to NuGet version number."
         fi
         echo "##[set-output name=SUFFIX;]$SUFFIX"
       id: extract_branch
