@@ -63,7 +63,7 @@ jobs:
         then
           echo "This branch is main. No prerelease suffix required."
         else
-          SUFFIX="-$BRANCH_NAME"
+          NUGETSUFFIX="-$BRANCH_NAME"
           echo "This branch is not main. Adding prerelease suffix to NuGet version number."
         fi
         echo "##[set-output name=SUFFIX;]$NUGETSUFFIX"
