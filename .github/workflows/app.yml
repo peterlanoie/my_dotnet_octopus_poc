@@ -59,7 +59,7 @@ jobs:
       run: |
         echo 'The branch name is:' $BRANCH_NAME
         SUFFIX=""
-        if ["$BRANCH_NAME" == "main"]
+        if [ "$BRANCH_NAME" == "main" ]
         then
           echo "This branch is main. No prerelease suffix required."
         else
