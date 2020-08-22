@@ -32,15 +32,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       
-    - name: Logging variables      
-      run: |
-        echo MARSHALLING_FOLDER is: $MARSHALLING_FOLDER
-        echo ARTIFACTS_FOLDER is: $ARTIFACTS_FOLDER
-        echo OUTPUT_FOLDER is: $OUTPUT_FOLDER
-        echo PACKAGE_NAME is: $PACKAGE_NAME
-        echo OCTOPUS_PROJECT_NAME is: $OCTOPUS_PROJECT_NAME
-        echo OCTOPUS_SPACE_NAME is: $OCTOPUS_SPACE_NAME 
-        
     # extract branch name
     - name: Extract branch name
       if: github.event_name != 'pull_request'
@@ -68,6 +59,17 @@ jobs:
         fi
         echo "::set-env name=SUFFIX::$(echo $NUGETSUFFIX)"
       id: create_suffix
+      
+    - name: Logging variables      
+      run: |
+        echo MARSHALLING_FOLDER is: $MARSHALLING_FOLDER
+        echo ARTIFACTS_FOLDER is: $ARTIFACTS_FOLDER
+        echo OUTPUT_FOLDER is: $OUTPUT_FOLDER
+        echo PACKAGE_NAME is: $PACKAGE_NAME
+        echo OCTOPUS_PROJECT_NAME is: $OCTOPUS_PROJECT_NAME
+        echo OCTOPUS_SPACE_NAME is: $OCTOPUS_SPACE_NAME 
+        echo BRANCH_NAME is: $BRANCH_NAME
+        echo SUFFIX is: $SUFFIX
       
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
