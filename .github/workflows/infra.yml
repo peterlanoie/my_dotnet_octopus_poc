@@ -1,22 +1,25 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Pack and push infra NuGet to Octopus
+name: INFRA - Pack and push NuGet to Octopus
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
+
 on:
   push:
-    branches: [ main ]
+    branches: '*'
     paths:
     - 'Infrastructure/**'
+    - '.github/workflows/infra.yml'
   pull_request:
-    branches: [ main ]
+    branches: '*'
     paths:
     - 'Infrastructure/**'
+    - '.github/workflows/infra.yml'
   workflow_dispatch:
     inputs:
       tags:
-        description: 'Manual run'  
+        description: 'Manual run' 
 
 env:  
   OUTPUT_FOLDER: PackagesOutput
