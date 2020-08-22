@@ -26,5 +26,5 @@ if ($Installedmodules.name -contains "AWS.Tools.IdentityManagement"){
 else {
     Write-Output "    AWS.Tools.IdentityManagement is not installed."
     Write-Output "    Installing AWS.Tools.IdentityManagement..."
-    Install-Module AWS.Tools.Common -Force
+    Install-Module AWS.Tools.IdentityManagement -Force
 }
