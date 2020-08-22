@@ -2,13 +2,15 @@ name: Build, pack and push application NuGet to Octopus
 
 on:
   push:
-    branches: [ main ]
+    branches: '*'
     paths:
     - 'Application/**'
+    - '.github/workflows/app.yml'
   pull_request:
-    branches: [ main ]
+    branches: '*'
     paths:
     - 'Application/**'
+    - '.github/workflows/app.yml'
   workflow_dispatch:
     inputs:
       tags:
