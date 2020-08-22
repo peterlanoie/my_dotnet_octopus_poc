@@ -39,14 +39,23 @@ jobs:
     - name: Clone repo
       uses: actions/checkout@v2
   
-    - name: Set environment variables      
+    - name: Set the version number      
       run: |        
+        # The first two numbers come from versionprefix.txt
         $versionFromFile = Get-Content versionprefix.txt 
         Write-Host "Found $versionFromFile in versionprefix.md"
+        
+        # The last number is the GitHub run number
+        $versionNumber = "$versionfromFile.${env:GITHUB_RUN_NUMBER}"
+        
+        # If this branch isn't main, append the branch name as a prerelease suffix
+        # More info: https://docs.microsoft.com/en-us/nuget/create-packages/prerelease-packages
         $branchName = "${{github.ref}}".Split("/")["${{github.ref}}".Split("/").Length -1]
-        $versionNumber = "$versionfromFile.${env:GITHUB_RUN_NUMBER}-$branchName"
-        Write-Host "Setting environment version number to: $versionNumber"
-
+        if ($branchName -notlike "main"){
+          $versionNumber = "$versionNumber-$branchName"
+        }
+        
+        Write-Host "Setting version number to: $versionNumber"
         echo "::set-env name=PACKAGE_VERSION::$versionNumber"        
       shell: powershell
   
