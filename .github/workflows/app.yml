@@ -42,7 +42,15 @@ jobs:
         echo OCTOPUS_SPACE_NAME is: $OCTOPUS_SPACE_NAME 
     
     - name: extract_branch
-      run: echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
+      run: |
+        BRANCH=${GITHUB_REF#refs/heads/}
+        SUFFIX=""
+        if [BRANCH = "main"]
+        then
+          SUFFIX="-$BRANCH"
+          echo "This branch is not main. Andding prerelease suffix to NuGet version number"
+        fi
+        echo "##[set-output name=SUFFIX;]$SUFFIX"
       id: extract_branch
       
     - name: Setup .NET Core
@@ -69,11 +77,11 @@ jobs:
     - name: Pack
       env: 
         BRANCH: ${{ steps.extract_branch.outputs.branch }}
-      run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$PACKAGE_VERSION-$BRANCH
+      run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$PACKAGE_VERSION$SUFFIX
     
     - name: Handoff to Octopus Deploy
       env:
         OCTOPUS_URL: ${{ secrets.OCTOPUS_SERVER_URL }}
         OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY }}
         BRANCH: ${{ steps.extract_branch.outputs.branch }}
-      run: octo push --package="$ARTIFACTS_FOLDER/$PACKAGE_NAME.$PACKAGE_VERSION-$BRANCH.nupkg" --server=$OCTOPUS_URL --apiKey=$OCTOPUS_API_KEY --space=$OCTOPUS_SPACE_NAME
+      run: octo push --package="$ARTIFACTS_FOLDER/$PACKAGE_NAME.$PACKAGE_VERSION$SUFFIX.nupkg" --server=$OCTOPUS_URL --apiKey=$OCTOPUS_API_KEY --space=$OCTOPUS_SPACE_NAME
