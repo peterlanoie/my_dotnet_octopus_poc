@@ -59,14 +59,15 @@ jobs:
       run: |
         echo 'The branch name is' $BRANCH_NAME
         SUFFIX=""
-        if [$BRANCH_NAME = "main"]
+        if [$BRANCH_NAME == "main"]
         then
           echo "This branch is main. No prerelease suffix required."
         else
           SUFFIX="-$BRANCH_NAME"
           echo "This branch is not main. Adding prerelease suffix to NuGet version number."
         fi
-        echo "##[set-output name=SUFFIX;]$SUFFIX"
+        echo "##[set-output name=SUFFIX;]$NUGETSUFFIX"
+      id: create_suffix
       
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
@@ -91,12 +92,12 @@ jobs:
     
     - name: Pack
       env: 
-        BRANCH: ${{ steps.extract_branch.outputs.branch }}
+        SUFFIX: ${{ steps.create_suffix.outputs.nugetsuffix }}
       run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$PACKAGE_VERSION$SUFFIX
     
     - name: Handoff to Octopus Deploy
       env:
         OCTOPUS_URL: ${{ secrets.OCTOPUS_SERVER_URL }}
         OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY }}
-        BRANCH: ${{ steps.extract_branch.outputs.branch }}
+        SUFFIX: ${{ steps.create_suffix.outputs.nugetsuffix }}
       run: octo push --package="$ARTIFACTS_FOLDER/$PACKAGE_NAME.$PACKAGE_VERSION$SUFFIX.nupkg" --server=$OCTOPUS_URL --apiKey=$OCTOPUS_API_KEY --space=$OCTOPUS_SPACE_NAME
