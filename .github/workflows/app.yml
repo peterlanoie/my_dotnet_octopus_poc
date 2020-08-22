@@ -1,4 +1,4 @@
-name: Build, pack and push application NuGet to Octopus
+name: APP - Build, pack and push application to Octopus
 
 on:
   push:
