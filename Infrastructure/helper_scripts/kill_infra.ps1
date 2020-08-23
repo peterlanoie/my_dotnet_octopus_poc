@@ -5,7 +5,8 @@ param(
                           # That match the pattern "$project-*"
     $octoUrl = "",
     $octoEnvName = "",
-    $octoApiKey = ""
+    $octoApiKey = "",
+    $spaceId = "Spaces-1" # If you are using the non-default space you will need to update this
 )
 
 $ErrorActionPreference = "Stop"
@@ -70,7 +71,7 @@ $environments = (Invoke-WebRequest "$octoUrl/api/environments" -Headers $octoApi
 
 $octoEnvId = ""
 foreach ($e in $environments.Items){
-    if ($e.Name -Like $octoEnvName){
+    if (($e.Name -Like $octoEnvName) -and ($e.SpaceId -Like $spaceId)){ # Need to check against spaceId as well in case another space has an env with the same name
         $octoEnvId = $e.Id
     }
 }
