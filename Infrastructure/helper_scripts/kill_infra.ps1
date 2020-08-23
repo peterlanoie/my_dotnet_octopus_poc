@@ -1,10 +1,11 @@
 param(
-    $project = "RandomQuotes",
+    $project = "",
     $role = "web-server", # Note, in future we will migrate to roles in format "RandomQuotes-web"
                           # When that happens we can infer role from $project and kill all machines
                           # That match the pattern "$project-*"
     $octoUrl = "",
     $octoEnvId = "",
+    $octoEnvName = "",
     $octoApiKey = ""
 )
 
@@ -24,10 +25,30 @@ if ($octoApiKey -like ""){
     }
 }
 
+if ($project -like ""){
+    try {
+        $project = $OctopusParameters["Octopus.Project.Name"]
+        Write-Output "Found value for project from Octopus variables: $project" 
+    }
+    catch {
+        $missingParams = $missingParams + "-project"
+    }
+}
+
+if ($octoEnvName -like ""){
+    try {
+        $octoEnvName = $OctopusParameters["Octopus.Environment.Name"]
+        Write-Output "Found value for octoEnv from Octopus variables: $octoEnvName" 
+    }
+    catch {
+        $missingParams = $missingParams + "-octoEnvName"
+    }
+}
+
 if ($octoEnvId -like ""){
     try {
         $octoEnvId = $OctopusParameters["Octopus.Environment.Id"]
-        Write-Output "Found value for octoEnv from Octopus variables: $octoEnv" 
+        Write-Output "Found value for octoEnv from Octopus variables: $octoEnvId" 
     }
     catch {
         $missingParams = $missingParams + "-octoEnvId"
@@ -37,7 +58,7 @@ if ($octoEnvId -like ""){
 if ($octoUrl -like ""){
     try {
         $octoUrl = $OctopusParameters["Octopus.Web.ServerUri"]
-        Write-Output "Found value for octoUrl from Octopus variables: $octoEnv" 
+        Write-Output "Found value for octoUrl from Octopus variables: $octoUrl" 
     }
     catch {
         $missingParams = $missingParams + "-octoUrl"
@@ -55,8 +76,7 @@ if ($missingParams.Count -gt 0){
 $octoApiHeader = @{ "X-Octopus-ApiKey" = $octoApiKey }
 
 Write-Output "project is : $project"
-Write-Output "octoUrl is : $octoUrl"
-Write-Output "octoEnvId is : $octoEnvId"
+
 if ($octoApiKey.Length -gt 0){
     Write-Output "octoApiKey is provided."
 }
@@ -64,7 +84,7 @@ if ($octoApiKey.Length -gt 0){
 function Get-Instances {
     # Using AWS PowerShell to find target instances
     $targetStates = @("pending", "running")
-    $instances = (Get-EC2Instance -Filter @{Name="tag:$project";Values=$octoEnvId}, @{Name="instance-state-name";Values=$targetStates}).Instances
+    $instances = (Get-EC2Instance -Filter @{Name="tag:$project";Values=$octoEnvName}, @{Name="instance-state-name";Values=$targetStates}).Instances
     return $instances
 }
 
