@@ -17,7 +17,7 @@ $missingParams = @()
 if ($octoApiKey -like ""){
     try {
         $octoApiKey = $OctopusParameters["API_KEY"]
-        Write-Output "Found value for octoApiKey from Octopus variables." 
+        Write-Output "    Found value for octoApiKey from Octopus variables." 
     }
     catch {
         $missingParams = $missingParams + "-octoApiKey"
@@ -27,7 +27,7 @@ if ($octoApiKey -like ""){
 if ($project -like ""){
     try {
         $project = $OctopusParameters["Octopus.Project.Name"]
-        Write-Output "Found value for project from Octopus variables: $project" 
+        Write-Output "    Found value for project from Octopus variables: $project" 
     }
     catch {
         $missingParams = $missingParams + "-project"
@@ -37,27 +37,17 @@ if ($project -like ""){
 if ($octoEnvName -like ""){
     try {
         $octoEnvName = $OctopusParameters["Octopus.Environment.Name"]
-        Write-Output "Found value for octoEnv from Octopus variables: $octoEnvName" 
+        Write-Output "    Found value for octoEnv from Octopus variables: $octoEnvName" 
     }
     catch {
         $missingParams = $missingParams + "-octoEnvName"
     }
 }
 
-if ($octoEnvId -like ""){
-    try {
-        $octoEnvId = $OctopusParameters["Octopus.Environment.Id"]
-        Write-Output "Found value for octoEnv from Octopus variables: $octoEnvId" 
-    }
-    catch {
-        $missingParams = $missingParams + "-octoEnvId"
-    }
-}
-
 if ($octoUrl -like ""){
     try {
         $octoUrl = $OctopusParameters["Octopus.Web.ServerUri"]
-        Write-Output "Found value for octoUrl from Octopus variables: $octoUrl" 
+        Write-Output "    Found value for octoUrl from Octopus variables: $octoUrl" 
     }
     catch {
         $missingParams = $missingParams + "-octoUrl"
@@ -89,7 +79,7 @@ if ($octoEnvId -eq ""){
     Write-Error "Unable to find and environment Id for environment name: $octoEnvName"
 }
 else {
-    Write-Error "Environment Id for $octoEnvName is: $octoEnvId"
+    Write-Output "      Environment Id for $octoEnvName is: $octoEnvId"
 }
 
 
@@ -112,43 +102,43 @@ function Get-Targets {
 
 $instancesToKill = Get-Instances
 $numOfInstancesToKill = $instancesToKill.Count
-Write-Output "Number of instances to kill: $numOfInstancesToKill" 
+Write-Output "    Number of instances to kill: $numOfInstancesToKill" 
 
 $targetsToKill = Get-Targets
 $numOfTargetsToKill = $targetsToKill.Count
-Write-Output "Number of targets to kill: $numOfTargetsToKill" 
+Write-Output "    Number of targets to kill: $numOfTargetsToKill" 
 
 if ($numOfInstancesToKill -ne 0){
     # Using AWS PowerShell to kill all the target instances
     ForEach ($instance in $instancesToKill){
         $id = $instance.id
-        Write-Output "Removing instance $id"
+        Write-Output "      Removing instance $id"
         Remove-EC2Instance -InstanceId $id
     }
     
     # Verifying that all instances are dead
     $remainingInstances = Get-Instances
     $numOfInstancesToKill = $remainingInstances.Count
-    Write-Output "Number of remaining instances: $numOfInstancesToKill" 
+    Write-Output "    Number of remaining instances: $numOfInstancesToKill" 
 }
 
 if ($numOfTargetsToKill -ne 0){
     # Killing all the targerts using the Octo API
     ForEach ($target in $targetsToKill){
         $id = $target.id
-        Write-Output "Removing target $id"
+        Write-Output "      Removing target $id"
         Invoke-RestMethod -Uri "$octoUrl/api/machines/$id" -Headers $octoApiHeader -Method Delete
     }
 
     # Verifying that all targets are dead
     $remainingTargetsToKill = Get-Targets
     $numOfTargetsToKill = $remainingTargetsToKill.Count
-    Write-Output "Number of targets to kill: $numOfTargetsToKill" 
+    Write-Output "    Number of targets to kill: $numOfTargetsToKill" 
 }
 
 if (($numOfInstancesToKill -ne 0) -or ($numOfTargetsToKill -ne 0)){
     Write-Error "Not all the EC2 instances / Octopus target manchines have been successfully killed."
 }
 else {
-    Write-Host "SUCCESS! All EC2 instances and Octopus target manchines for project $project in environment $octoEnv have been killed."
+    Write-Host "    SUCCESS! All EC2 instances and Octopus target manchines for project $project in environment $octoEnv have been killed."
 }
