@@ -4,7 +4,6 @@ param(
                           # When that happens we can infer role from $project and kill all machines
                           # That match the pattern "$project-*"
     $octoUrl = "",
-    $octoEnvId = "",
     $octoEnvName = "",
     $octoApiKey = ""
 )
@@ -75,11 +74,25 @@ if ($missingParams.Count -gt 0){
 
 $octoApiHeader = @{ "X-Octopus-ApiKey" = $octoApiKey }
 
-Write-Output "project is : $project"
+# Finding the EnvironmentId
 
-if ($octoApiKey.Length -gt 0){
-    Write-Output "octoApiKey is provided."
+$environments = (Invoke-WebRequest "$octoUrl/api/environments" -Headers $octoApiHeader -UseBasicParsing).content | ConvertFrom-Json
+
+$octoEnvId = ""
+foreach ($e in $environments.Items){
+    if ($e.Name -Like $octoEnvName){
+        $octoEnvId = $e.Id
+    }
 }
+
+if ($octoEnvId -eq ""){
+    Write-Error "Unable to find and environment Id for environment name: $octoEnvName"
+}
+else {
+    Write-Error "Environment Id for $octoEnvName is: $octoEnvId"
+}
+
+
 
 function Get-Instances {
     # Using AWS PowerShell to find target instances
