@@ -36,7 +36,7 @@ if ($octoEnvId -like ""){
 
 if ($octoUrl -like ""){
     try {
-        $octoUrl = $OctopusParameters["Octopus.Web.BaseUrl"]
+        $octoUrl = $OctopusParameters["Octopus.Web.ServerUri"]
         Write-Output "Found value for octoUrl from Octopus variables: $octoEnv" 
     }
     catch {
