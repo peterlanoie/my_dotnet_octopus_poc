@@ -113,7 +113,7 @@ if ($numOfInstancesToKill -ne 0){
     ForEach ($instance in $instancesToKill){
         $id = $instance.id
         Write-Output "      Removing instance $id"
-        Remove-EC2Instance -InstanceId $id
+        Remove-EC2Instance -InstanceId $id -Force
     }
     
     # Verifying that all instances are dead
