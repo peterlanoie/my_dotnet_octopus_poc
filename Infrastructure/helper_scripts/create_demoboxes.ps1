@@ -182,9 +182,8 @@ if ($Wait){
         
             if ($NumRegistered -eq $count){
                 $allRegistered = $true
-                Write-Output "      $time seconds: SUCCESS! All $count machines are registered!"
-                Write-Output "        Machine names:"
-                Write-Output $machines.Name
+                Write-Output "      $time seconds: $NumRegistered out of $count instances are registered."
+                Write-Output "    SUCCESS! All $count machines are registered!"
                 break
             }
             else {
