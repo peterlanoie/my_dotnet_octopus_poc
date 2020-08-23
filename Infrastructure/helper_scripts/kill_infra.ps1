@@ -83,8 +83,6 @@ else {
     Write-Output "      Environment Id for $octoEnvName is: $octoEnvId"
 }
 
-
-
 function Get-Instances {
     # Using AWS PowerShell to find target instances
     $targetStates = @("pending", "running")
@@ -104,10 +102,12 @@ function Get-Targets {
 $instancesToKill = Get-Instances
 $numOfInstancesToKill = $instancesToKill.Count
 Write-Output "    Number of instances to kill: $numOfInstancesToKill" 
+Write-Output $instancesToKill.id
 
 $targetsToKill = Get-Targets
 $numOfTargetsToKill = $targetsToKill.Count
 Write-Output "    Number of targets to kill: $numOfTargetsToKill" 
+Write-Output $targetsToKill.id
 
 if ($numOfInstancesToKill -ne 0){
     # Using AWS PowerShell to kill all the target instances
