@@ -1,10 +1,42 @@
 param(
-    [Parameter(Mandatory)][ValidateNotNullOrEmpty()]$awsAccessKey,
-    [Parameter(Mandatory)][ValidateNotNullOrEmpty()]$awsSecretKey,
+    $awsAccessKey = "",
+    $awsSecretKey = "",
     $defaulAwsRegion = "eu-west-1" # Other carbon neutral regions are listed here: https://aws.amazon.com/about-aws/sustainability/
 )
 
 $ErrorActionPreference = "Stop"  
+
+# Setting default values for parameters
+
+$missingParams = @()
+
+if ($awsAccessKey -like ""){
+    try {
+        $awsAccessKey = $OctopusParameters["AWS_ACCOUNT.AccessKey"]
+        Write-Output "Found value for awsAccessKey from Octopus variables." 
+    }
+    catch {
+        $missingParams = $missingParams + "-awsAccessKey"
+    }
+}
+
+if ($awsSecretKey -like ""){
+    try {
+        $awsSecretKey = $OctopusParameters["AWS_ACCOUNT.SecretKey"]
+        Write-Output "Found value for awsSecretKey from Octopus variables." 
+    }
+    catch {
+        $missingParams = $missingParams + "-awsSecretKey"
+    }
+}
+
+if ($missingParams.Count -gt 0){
+    $errorMessage = "Missing the following parameters: "
+    foreach ($param in $missingParams) {
+        $errorMessage += "$param, "
+    }
+    Write-Error $errorMessage
+}
 
 Write-Output "  Execution root dir: $PSScriptRoot"
 Write-Output "*"
