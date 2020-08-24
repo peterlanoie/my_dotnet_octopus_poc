@@ -42,8 +42,8 @@ if (test-path $holdingFile){
         # If the other runbook has finished
         if (-not (test-path $holdingFile)){
             $AwsBeingInstalled = $false
-            Write-Output "   Looks like the AWS Tools install should be finished now."
-            Write-Output "   Verifying that AWS Tools is installed correctly..."
+            Write-Output "    Looks like the AWS Tools install should be finished now."
+            Write-Output "    Verifying that AWS Tools is installed correctly..."
             break
         }
 
@@ -103,33 +103,33 @@ catch {
 $Installedmodules = Get-InstalledModule
 
 if ($Installedmodules.name -contains "AWS.Tools.Common"){
-    Write-Output "    Module AWS.Tools.Common is already installed "
+    Write-Output "      Module AWS.Tools.Common is already installed "
 }
 else {
-    Write-Output "    AWS.Tools.Common is not installed."
-    Write-Output "    Installing AWS.Tools.Common..."
+    Write-Output "      AWS.Tools.Common is not installed."
+    Write-Output "        Installing AWS.Tools.Common..."
     Install-Module AWS.Tools.Common -Force
 }
 
 if ($Installedmodules.name -contains "AWS.Tools.EC2"){
-    Write-Output "    Module AWS.Tools.EC2 is already installed."
+    Write-Output "      Module AWS.Tools.EC2 is already installed."
 }
 else {
-    Write-Output "    AWS.Tools.EC2 is not installed."
-    Write-Output "    Installing AWS.Tools.EC2..."
+    Write-Output "      AWS.Tools.EC2 is not installed."
+    Write-Output "        Installing AWS.Tools.EC2..."
     Install-Module AWS.Tools.EC2 -Force
 }
 
 if ($Installedmodules.name -contains "AWS.Tools.IdentityManagement"){
-    Write-Output "    Module AWS.Tools.IdentityManagement is already installed "
+    Write-Output "      Module AWS.Tools.IdentityManagement is already installed "
 }
 else {
-    Write-Output "    AWS.Tools.IdentityManagement is not installed."
-    Write-Output "    Installing AWS.Tools.IdentityManagement..."
+    Write-Output "      AWS.Tools.IdentityManagement is not installed."
+    Write-Output "        Installing AWS.Tools.IdentityManagement..."
     Install-Module AWS.Tools.IdentityManagement -Force
 }
 
-Write-Output "    AWS Tools is set up and ready to use."
+Write-Output "      AWS Tools is set up and ready to use."
 
 # Delete holding file
 Write-Output "    Removing holding file."
