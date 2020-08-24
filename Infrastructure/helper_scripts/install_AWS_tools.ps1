@@ -41,6 +41,7 @@ catch {
 }
 $startTime = Get-Date
 $holdingFileText = "Runbook $RunbookRunId installing AWS tools at: $startTime"
+Write-Output "    Creating a holding file at: $holdingFile"
 $holdingFileText | out-file $holdingFile
 
 # Installing AWS Tools
@@ -76,4 +77,5 @@ else {
 Write-Output "    AWS Tools is set up and ready to use."
 
 # Delete holding file
+Write-Output "    Removing holding file."
 Remove-Item $holdingFile
