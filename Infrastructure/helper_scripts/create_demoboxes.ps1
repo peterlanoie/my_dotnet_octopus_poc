@@ -166,7 +166,7 @@ if ($Wait){
             $environmentMachines = $Environment.Links.Machines.Split("{")[0]
             $machines = ((Invoke-WebRequest ($octoUrl + $environmentMachines) -Headers $header -UseBasicParsing).content | ConvertFrom-Json).items
             $MachinesInRole = @()
-            $MachinesInRole = $machines | Where-Object {$Role -in $_.Roles}
+            $MachinesInRole += $machines | Where-Object {$Role -in $_.Roles}
              
             $NumRegistered = $MachinesInRole.Count
             
