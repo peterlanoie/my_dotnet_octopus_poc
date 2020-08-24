@@ -136,6 +136,14 @@ if ($Wait){
         Start-Sleep -s 10
     }
     
+    # Authenticating to the API
+    try {
+        $APIKey = $OctopusParameters["API_KEY"]
+        $header = @{ "X-Octopus-ApiKey" = $APIKey }
+    }
+    catch {
+        Write-Warning 'Failed to read the Octopus API Key from $OctopusParameters["API_KEY"].'
+    }
 
     # Updating calimari on all tentacles
     function Update-Calimari {
@@ -152,7 +160,7 @@ if ($Wait){
             } 
         } | ConvertTo-Json
         
-        Invoke-RestMethod $octoUrl/api/tasks -Method Post -Body $body -Headers $octoApiHeader
+        Invoke-RestMethod $octoUrl/api/tasks -Method Post -Body $body -Headers $header
     }
 
     if ($deployTentacle){
@@ -165,10 +173,7 @@ if ($Wait){
             # Seeing how long we've been waiting so far
             $time = [Math]::Floor([decimal]($stopwatch.Elapsed.TotalSeconds))
             
-            # Authenticating to the API
-            $APIKey = $OctopusParameters["API_KEY"]
-            $header = @{ "X-Octopus-ApiKey" = $APIKey }
-
+            
             # Note, this will need to be changed at some point 
             $Role = "web-server" 
 
@@ -191,7 +196,7 @@ if ($Wait){
                         Write-Output "        Machine $name registered with URI $uri"
                         Write-Output "        Updating Calamari:"
                         WRite-Output "          Update-Calimari -MachineID $id -MachineName $name"
-                        Update-Calimari -MachineID $id -MachineName $name
+                        Update-Calimari -MachineID $id -MachineName $name -Header $header
                         $machineNames += $name
                     }
                 }
