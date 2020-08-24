@@ -95,13 +95,13 @@ if ($oops){
     Write-Output $msg
 }
 
-function Validate-IIS {
+function Test-IIS {
     param (
         $ip
     )
     $iis = $false
     Write-Output "Executing: Invoke-WebRequest -Uri $ip"
-    $content = Invoke-WebRequest -Uri $ip
+    $content = Invoke-WebRequest -Uri $ip -UseBasicParsing
     if ($content.toString() -like "*iisstart.png*"){
         $iis = $true
     }
@@ -193,9 +193,10 @@ if ($Wait){
             forEach ($ip in $ipAddresses){
                 $iisRunning = $false
                 if ($ip -notIn $machinesRunningIIS){
-                    $iisRunning = Validate-IIS -ip $ip
+                    $iisRunning = Test-IIS -ip $ip
                 }
                 if ($iisRunning){
+                    $machinesRunningIIS += $ip
                     $IISCount = $machinesRunningIIS.Count
                     Write-Output "      IIS site is now available at $ip"
                     Write-Output "      $IISCount out of $Count machines have successfully configured IIS"
