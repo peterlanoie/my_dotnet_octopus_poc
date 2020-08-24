@@ -160,7 +160,7 @@ if ($Wait){
             } 
         } | ConvertTo-Json
         
-        Invoke-RestMethod $octoUrl/api/tasks -Method Post -Body $body -Headers $header
+        Invoke-RestMethod $octoUrl/api/tasks -Method Post -Body $body -Headers $header | out-null
     }
 
     if ($deployTentacle){
