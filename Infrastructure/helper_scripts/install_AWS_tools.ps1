@@ -1,7 +1,16 @@
 $ErrorActionPreference = "Stop"  
 
 # Check to see if holding file exists - implying that another process is already installing AWS Tools
-$holdingFile = "$PSScriptRoot/holdingfile.txt"
+# (If two processes try to install it at the same time it's likely that one will fail, causing a nasty error)
+$holdingFilePath = "C:/out"
+if (test-path $holdingFilePath){
+    Write-Output "    $holdingFilePath already exists."
+}
+else {
+    Write-Output "    Creating directory: $holdingFilePath"
+    New-Item -Type Directory $holdingFilePath
+}
+$holdingFile = "holdingfile.txt"
 $warningTime = 90 # seconds
 $warningGiven = $false
 $timeoutTime = 120 # seconds
@@ -12,19 +21,39 @@ if (test-path $holdingFile){
     $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
     while ($AwsBeingInstalled){
         Start-Sleep -s 5
+
+        # Checking to see if a new runbook has taken over
+        $latestHoldingFileText = Get-Content -Path $holdingFile -Raw
+        if ($latestHoldingFileText -notlike $holdingfiletext){
+            Write-Output "    A new process is working on the AWS Tools install."
+            Write-Output "    $latestHoldingFileText"
+            Write-Output "    Re-setting the timer."
+            $stopwatch.Restart()
+            $holdingfiletext = $latestHoldingFileText 
+        }
+
+        # Getting the current second
         $time = [Math]::Floor([decimal]($stopwatch.Elapsed.TotalSeconds))
+        
+        # If the other runbook has finished
         if (-not (test-path $holdingFile)){
             $AwsBeingInstalled = $false
             Write-Output "   Looks like the AWS Tools install should be finished now."
             Write-Output "   Verifying that AWS Tools is installed correctly..."
         }
+
+        # If the other runbook is still going
         if ($AwsBeingInstalled){
             Write-Output "      $time seconds: AWS Tools still being installed..."
         }
+
+        # If another runbook is hogging the process for an unusually long time
         if (($time -ge $warningTime) -and (-not $warningGiven)){
             Write-Warning "Installing AWS Tools normally only takes about 70 seconds."
             $warningGiven = $true
         }
+
+        # If another runbook has been hogging for way too long
         if ($time -ge $timeoutTime){
             Write-Error "Timed out at $time seconds."
         }
