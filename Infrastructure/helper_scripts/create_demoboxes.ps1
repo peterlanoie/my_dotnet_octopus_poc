@@ -137,7 +137,7 @@ if ($Wait){
     }
     
     if ($deployTentacle){
-        $machines = @()
+        $machineNames = @()
     
         Write-Output "    Waiting for instances to register with Octopus Server. (This normally takes 6 or 7 minutes.)"
         $stopwatch.Restart()
@@ -169,18 +169,18 @@ if ($Wait){
              
             $NumRegistered = $MachinesInRole.Count
             
-            if ($NumRegistered -gt $machines.Count){
+            if ($NumRegistered -gt $machineNames.Count){
                 ForEach ($m in $MachinesInRole){
-                    if ($m.Name -notin $machines.Name){
+                    if ($m.Name -notin $machineNames.Name){
                         $name = $m.Name
                         $uri = $m.URI
                         Write-Output "        Machine $name registered with URI $uri"
-                        $machines += $name
+                        $machineNames += $name
                     }
                 }
             }
         
-            if ($NumRegistered -eq $count){
+            if ($NumRegistered -ge $count){
                 $allRegistered = $true
                 Write-Output "      $time seconds: $NumRegistered out of $count instances are registered."
                 Write-Output "    SUCCESS! All $count machines are registered!"
