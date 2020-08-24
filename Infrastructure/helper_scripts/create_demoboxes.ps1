@@ -95,21 +95,6 @@ if ($oops){
     Write-Output $msg
 }
 
-function Test-IIS {
-    param (
-        $ip
-    )
-    try { 
-        $content = Invoke-WebRequest -Uri $ip -TimeoutSec 1
-    }
-    catch {
-        return $false
-    }
-    if ($content.toString() -like "*iisstart.png*"){
-    return $true
-    }
-}
-
 if ($Wait){
     $allRunning = $false
     $allRegistered = $false
@@ -178,6 +163,21 @@ if ($Wait){
         } | ConvertTo-Json
         
         Invoke-RestMethod $octoUrl/api/tasks -Method Post -Body $body -Headers $header | out-null
+    }
+
+    function Test-IIS {
+        param (
+            $ip
+        )
+        try { 
+            $content = Invoke-WebRequest -Uri $ip -TimeoutSec 1
+        }
+        catch {
+            return $false
+        }
+        if ($content.toString() -like "*iisstart.png*"){
+        return $true
+        }
     }
 
     if ($deployTentacle){
