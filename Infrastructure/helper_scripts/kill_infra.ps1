@@ -141,5 +141,5 @@ if (($numOfInstancesToKill -ne 0) -or ($numOfTargetsToKill -ne 0)){
     Write-Error "Not all the EC2 instances / Octopus target manchines have been successfully killed."
 }
 else {
-    Write-Host "SUCCESS! All EC2 instances and Octopus target manchines for project $project in environment $octoEnvName have been killed."
+    Write-Host "SUCCESS! All EC2 instances and Octopus target machines for project $project in environment $octoEnvName have been killed."
 }
