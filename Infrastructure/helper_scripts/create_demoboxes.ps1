@@ -196,16 +196,19 @@ if ($Wait){
             forEach ($ip in $ipAddresses){
                 if ($ip -notIn $machinesRunningIIS){
                     $iisRunning = Test-IIS -ip $ip
+                    Write-Output "Testing $ip"
+                    Write-Output $iisRunning
                 }
                 if ($iisRunning){
+                    Write-Output "$ip found"
                     $machinesRunningIIS += $ip
-                    Write-Output "      Default IIS site is now available at $ip"
+                    Write-Output "        Default IIS site is now available at $ip"
                     $newMachineOnline = $true
                 }
             }
             if ($newMachineOnline){
                 $IISCount = $machinesRunningIIS.Count
-                Write-Output "      $IISCount out of $Count machines have successfully configured IIS."
+                Write-Output "          $IISCount out of $Count machines have successfully configured IIS."
             }
 
             # Note, this will need to be changed at some point 
