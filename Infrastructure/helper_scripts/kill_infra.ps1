@@ -134,7 +134,7 @@ if ($numOfTargetsToKill -ne 0){
     # Verifying that all targets are dead
     $remainingTargetsToKill = Get-Targets
     $numOfTargetsToKill = $remainingTargetsToKill.Count
-    Write-Output "    Number of targets to kill: $numOfTargetsToKill" 
+    Write-Output "    Number of remaining targets: $numOfTargetsToKill" 
 }
 
 if (($numOfInstancesToKill -ne 0) -or ($numOfTargetsToKill -ne 0)){
