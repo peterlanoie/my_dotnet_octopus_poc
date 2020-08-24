@@ -136,6 +136,25 @@ if ($Wait){
         Start-Sleep -s 10
     }
     
+
+    # Updating calimari on all tentacles
+    function Update-Calimari {
+        param (
+            [Parameter(Mandatory=$true)][string]$MachineId,
+            [Parameter(Mandatory=$true)][string]$MachineName
+        )
+        $body = @{ 
+            Name = "UpdateCalamari" 
+            Description = "Updating calamari on $MachineName" 
+            Arguments = @{ 
+                Timeout= "00:05:00" 
+                MachineIds = @($MachineId) #$MachineId could contain an array of machines too
+            } 
+        } | ConvertTo-Json
+        
+        Invoke-RestMethod $octoUrl/api/tasks -Method Post -Body $body -Headers $octoApiHeader
+    }
+
     if ($deployTentacle){
         $machineNames = @()
     
@@ -143,22 +162,15 @@ if ($Wait){
         $stopwatch.Restart()
 
         While (-not $allRegistered){
+            # Seeing how long we've been waiting so far
             $time = [Math]::Floor([decimal]($stopwatch.Elapsed.TotalSeconds))
-
-            if ($time -gt $timeout){
-                Write-Error "Timed out at $time seconds. Timeout currently set to $timeout seconds. There is a parameter on this script to adjust the default timeout."
-            }
-        
-            if (($time -gt 600) -and (-not $registeredWarningGiven)){
-                Write-Warning "Machines are taking an unusually long time to register."
-                $registeredWarningGiven = $true
-            }
             
-            $APIKey = $OctopusParameters["API_KEY"]
-            $Role = "web-server"
-        
             # Authenticating to the API
+            $APIKey = $OctopusParameters["API_KEY"]
             $header = @{ "X-Octopus-ApiKey" = $APIKey }
+
+            # Note, this will need to be changed at some point 
+            $Role = "web-server" 
 
             # Calling the API to find get machine data
             $envID = $OctopusParameters["Octopus.Environment.Id"]
@@ -167,20 +179,25 @@ if ($Wait){
             $machines = ((Invoke-WebRequest ($octoUrl + $environmentMachines) -Headers $header -UseBasicParsing).content | ConvertFrom-Json).items
             $MachinesInRole = @()
             $MachinesInRole += $machines | Where-Object {$Role -in $_.Roles}
-             
-            $NumRegistered = $MachinesInRole.Count
             
+            # If we've found a new machine. Logging the details and updating Calimari
+            $NumRegistered = $MachinesInRole.Count
             if ($NumRegistered -gt $machineNames.Count){
                 ForEach ($m in $MachinesInRole){
                     if ($m.Name -notin $machineNames){
                         $name = $m.Name
                         $uri = $m.URI
+                        $id = $m.Id
                         Write-Output "        Machine $name registered with URI $uri"
+                        Write-Output "        Updating Calamari:"
+                        WRite-Output "          Update-Calimari -MachineID $id -MachineName $name"
+                        Update-Calimari -MachineID $id -MachineName $name
                         $machineNames += $name
                     }
                 }
             }
         
+            # If we have all the machines we ordered, break out of the loop
             if ($NumRegistered -ge $count){
                 $allRegistered = $true
                 Write-Output "      $time seconds: $NumRegistered out of $count instances are registered."
@@ -190,6 +207,19 @@ if ($Wait){
             else {
                 Write-Output "      $time seconds: $NumRegistered out of $count instances are registered."
             }
+
+            # If we've been waiting an oddly long amount of time, raise a warning
+            if (($time -gt 600) -and (-not $registeredWarningGiven)){
+                Write-Warning "Machines are taking an unusually long time to register."
+                $registeredWarningGiven = $true
+            }
+
+            # If we've been waiting too long, time out
+            if ($time -gt $timeout){
+                Write-Error "Timed out at $time seconds. Timeout currently set to $timeout seconds. There is a parameter on this script to adjust the default timeout."
+            }
+            
+            # Seems we don't yet have all of our machines: Let's wait 30s and try again
             Start-Sleep -s 30
         }
     }
