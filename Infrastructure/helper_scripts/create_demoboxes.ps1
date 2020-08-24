@@ -172,7 +172,7 @@ if ($Wait){
             
             if ($NumRegistered -gt $machineNames.Count){
                 ForEach ($m in $MachinesInRole){
-                    if ($m.Name -notin $machineNames.Name){
+                    if ($m.Name -notin $machineNames){
                         $name = $m.Name
                         $uri = $m.URI
                         Write-Output "        Machine $name registered with URI $uri"
