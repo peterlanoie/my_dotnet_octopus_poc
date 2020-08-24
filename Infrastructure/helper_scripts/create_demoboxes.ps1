@@ -95,11 +95,24 @@ if ($oops){
     Write-Output $msg
 }
 
+function Validate-IIS {
+    param (
+        $ip
+    )
+    $iis = $false
+    $content = Invoke-WebRequest -Uri $ip
+    if ($content.toString() -like "*iisstart.png*"){
+        $iis = $true
+    }
+    return $iis
+}
+
 if ($Wait){
     $allRunning = $false
     $allRegistered = $false
     $runningWarningGiven = $false
     $registeredWarningGiven = $false
+    $ipAddresses = @()
 
     Write-Output "    Waiting for instances to start. (This normally takes about 30 seconds.)"
     $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
@@ -125,6 +138,7 @@ if ($Wait){
             ForEach ($instance in $runningInstances){
                 $id = $instance.InstanceId
                 $ip = $instance.PublicIpAddress
+                $ipAddresses += $ip
                 Write-Output "        Instance $id is available at the public IP: $ip"
             }
             break
@@ -165,6 +179,7 @@ if ($Wait){
 
     if ($deployTentacle){
         $machineNames = @()
+        $machinesRunningIIS = @()
     
         Write-Output "    Waiting for instances to register with Octopus Server. (This normally takes 6 or 7 minutes.)"
         $stopwatch.Restart()
@@ -173,7 +188,19 @@ if ($Wait){
             # Seeing how long we've been waiting so far
             $time = [Math]::Floor([decimal]($stopwatch.Elapsed.TotalSeconds))
             
-            
+            # Checking the progress with IIS
+            forEach ($ip in $ipAddresses){
+                $iisRunning = $false
+                if ($ip -notIn $machinesRunningIIS){
+                    $iisRunning = Validate-IIS -ip $ip
+                }
+                if ($iisRunning){
+                    $IISCount = $machinesRunningIIS.Count
+                    Write-Output "      IIS site is now available at $ip"
+                    Write-Output "      $IISCount out of $Count machines have successfully configured IIS"
+                }
+            }
+
             # Note, this will need to be changed at some point 
             $Role = "web-server" 
 
