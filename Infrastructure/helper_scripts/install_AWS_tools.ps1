@@ -39,6 +39,14 @@ if (test-path $holdingFile){
     while ($AwsBeingInstalled){
         Start-Sleep -s 5
 
+        # If the other runbook has finished
+        if (-not (test-path $holdingFile)){
+            $AwsBeingInstalled = $false
+            Write-Output "   Looks like the AWS Tools install should be finished now."
+            Write-Output "   Verifying that AWS Tools is installed correctly..."
+            break
+        }
+
         # Checking to see if a new runbook has taken over
         try {
             $latestHoldingFileText = Get-Content -Path $holdingFile -Raw
@@ -57,13 +65,6 @@ if (test-path $holdingFile){
         # Getting the current second
         $time = [Math]::Floor([decimal]($stopwatch.Elapsed.TotalSeconds))
         
-        # If the other runbook has finished
-        if (-not (test-path $holdingFile)){
-            $AwsBeingInstalled = $false
-            Write-Output "   Looks like the AWS Tools install should be finished now."
-            Write-Output "   Verifying that AWS Tools is installed correctly..."
-        }
-
         # If the other runbook is still going
         if ($AwsBeingInstalled){
             Write-Output "      $time seconds: AWS Tools still being installed..."
