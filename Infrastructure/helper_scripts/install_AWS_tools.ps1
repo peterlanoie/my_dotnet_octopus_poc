@@ -26,15 +26,26 @@ $warningTime = 90 # seconds
 $warningGiven = $false
 $timeoutTime = 120 # seconds
 if (test-path $holdingFile){
-    $holdingFileText = Get-Content -Path $holdingFile -Raw
-    Write-Output "    $holdingFileText"
+    try {
+        $holdingFileText = Get-Content -Path $holdingFile -Raw
+        Write-Output "    $holdingFileText"
+    }
+    catch {
+        Write-Output "    Could not read $holdingFile"
+    }
+
     $AwsBeingInstalled = $true
     $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
     while ($AwsBeingInstalled){
         Start-Sleep -s 5
 
         # Checking to see if a new runbook has taken over
-        $latestHoldingFileText = Get-Content -Path $holdingFile -Raw
+        try {
+            $latestHoldingFileText = Get-Content -Path $holdingFile -Raw
+        }
+        catch {
+            $latestHoldingFileText = $holdingfiletext
+        }
         if ($latestHoldingFileText -notlike $holdingfiletext){
             Write-Output "    A new process is working on the AWS Tools install."
             Write-Output "    $latestHoldingFileText"
@@ -82,8 +93,11 @@ catch {
 $startTime = Get-Date
 $holdingFileText = "Runbook $RunbookRunId installing AWS tools at: $startTime"
 Write-Output "    Creating a holding file at: $holdingFile"
-$holdingFileText | out-file $holdingFile
-
+try {$holdingFileText | out-file $holdingFile
+}
+catch {
+    Write-Warning "Failed to create a holding file."
+}
 # Installing AWS Tools
 $Installedmodules = Get-InstalledModule
 
