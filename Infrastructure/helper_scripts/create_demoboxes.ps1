@@ -194,8 +194,7 @@ if ($Wait){
                         $uri = $m.URI
                         $id = $m.Id
                         Write-Output "        Machine $name registered with URI $uri"
-                        Write-Output "        Updating Calamari:"
-                        WRite-Output "          Update-Calimari -MachineID $id -MachineName $name"
+                        WRite-Output "          Updating calamari on $name..."
                         Update-Calimari -MachineID $id -MachineName $name
                         $machineNames += $name
                     }
