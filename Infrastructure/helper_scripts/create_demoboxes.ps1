@@ -170,7 +170,7 @@ if ($Wait){
             $ip
         )
         try { 
-            $content = Invoke-WebRequest -Uri $ip -TimeoutSec 10
+            $content = Invoke-WebRequest -Uri $ip -TimeoutSec 10 -UseBasicParsing
         }
         catch {
             return $false
