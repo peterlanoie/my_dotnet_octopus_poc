@@ -99,13 +99,15 @@ function Test-IIS {
     param (
         $ip
     )
-    $iisRunning = $false
-    Write-Output "Executing: Invoke-WebRequest -Uri $ip"
-    $content = Invoke-WebRequest -Uri $ip -UseBasicParsing
-    if ($content.toString() -like "*iisstart.png*"){
-        $iisRunning = $true
+    try { 
+        $content = Invoke-WebRequest -Uri $ip -TimeoutSec 1
     }
-    return $iisRunning
+    catch {
+        return $false
+    }
+    if ($content.toString() -like "*iisstart.png*"){
+    return $true
+    }
 }
 
 if ($Wait){
