@@ -100,6 +100,7 @@ function Validate-IIS {
         $ip
     )
     $iis = $false
+    Write-Output "Executing: Invoke-WebRequest -Uri $ip"
     $content = Invoke-WebRequest -Uri $ip
     if ($content.toString() -like "*iisstart.png*"){
         $iis = $true
@@ -221,7 +222,7 @@ if ($Wait){
                         $uri = $m.URI
                         $id = $m.Id
                         Write-Output "        Machine $name registered with URI $uri"
-                        WRite-Output "          Updating calamari on $name..."
+                        Write-Output "          Updating calamari on $name..."
                         Update-Calimari -MachineID $id -MachineName $name
                         $machineNames += $name
                     }
