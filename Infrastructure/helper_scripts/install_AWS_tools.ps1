@@ -8,9 +8,20 @@ if (test-path $holdingFilePath){
 }
 else {
     Write-Output "    Creating directory: $holdingFilePath"
-    New-Item -Type Directory $holdingFilePath
+    try {
+        New-Item -Type Directory $holdingFilePath
+    }
+    catch {
+        Write-Output "    Failed to create directory. This sometimes happens if two runbooks are running simultaneously on the same worker."
+        if (test-path $holdingFilePath){
+            Write-Output "    $holdingFilePath now exists now."
+        }
+        else {
+            Write-Error "Failed to create $holdingFilePath"
+        }
+    }
 }
-$holdingFile = "holdingfile.txt"
+$holdingFile = "$holdingFilePath/holdingfile.txt"
 $warningTime = 90 # seconds
 $warningGiven = $false
 $timeoutTime = 120 # seconds
