@@ -99,13 +99,13 @@ function Test-IIS {
     param (
         $ip
     )
-    $iis = $false
+    $iisRunning = $false
     Write-Output "Executing: Invoke-WebRequest -Uri $ip"
     $content = Invoke-WebRequest -Uri $ip -UseBasicParsing
     if ($content.toString() -like "*iisstart.png*"){
-        $iis = $true
+        $iisRunning = $true
     }
-    return $iis
+    return $iisRunning
 }
 
 if ($Wait){
@@ -193,6 +193,7 @@ if ($Wait){
             forEach ($ip in $ipAddresses){
                 $iisRunning = $false
                 if ($ip -notIn $machinesRunningIIS){
+                    Write-Output "Executing: Test-IIS -ip $ip"
                     $iisRunning = Test-IIS -ip $ip
                 }
                 if ($iisRunning){
