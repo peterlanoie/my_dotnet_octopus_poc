@@ -170,7 +170,7 @@ if ($Wait){
             $ip
         )
         try { 
-            $content = Invoke-WebRequest -Uri $ip -TimeoutSec 10 -UseBasicParsing
+            $content = Invoke-WebRequest -Uri $ip -TimeoutSec 1 -UseBasicParsing
         }
         catch {
             return $false
@@ -184,7 +184,8 @@ if ($Wait){
         $machineNames = @()
         $machinesRunningIIS = @()
     
-        Write-Output "    Waiting for instances to register with Octopus Server. (This normally takes 6 or 7 minutes.)"
+        Write-Output "    Waiting for instances to register with Octopus Server."
+        Write-Output "    (It normally takes 3-4 minutes to set up IIS and about 7 to register with Octopus Server.)"
         $stopwatch.Restart()
 
         While (-not $allRegistered){
@@ -194,21 +195,15 @@ if ($Wait){
             # Checking the progress with IIS
             $newMachineOnline = $false
             forEach ($ip in $ipAddresses){
+                $iisRunning = $false
                 if ($ip -notIn $machinesRunningIIS){
                     $iisRunning = Test-IIS -ip $ip
-                    Write-Output "Testing $ip"
-                    Write-Output $iisRunning
                 }
                 if ($iisRunning){
-                    Write-Output "$ip found"
                     $machinesRunningIIS += $ip
                     Write-Output "        Default IIS site is now available at $ip"
                     $newMachineOnline = $true
                 }
-            }
-            if ($newMachineOnline){
-                $IISCount = $machinesRunningIIS.Count
-                Write-Output "          $IISCount out of $Count machines have successfully configured IIS."
             }
 
             # Note, this will need to be changed at some point 
@@ -246,7 +241,9 @@ if ($Wait){
                 break
             }
             else {
-                Write-Output "      $time seconds: $NumRegistered out of $count instances are registered."
+                $IISCount = $machinesRunningIIS.Count
+                Write-Output "      $time seconds: $IISCount out of $Count machines have successfully configured IIS."
+                Write-Output "                     $NumRegistered out of $count machines have successfully registered with Octopus Server."
             }
 
             # If we've been waiting an oddly long amount of time, raise a warning
