@@ -102,13 +102,12 @@ function Get-Targets {
 $instancesToKill = Get-Instances
 $numOfInstancesToKill = $instancesToKill.Count
 Write-Output "    Number of instances to kill: $numOfInstancesToKill" 
-Write-Output $instancesToKill.InstanceId
 
 if ($numOfInstancesToKill -ne 0){
     # Using AWS PowerShell to kill all the target instances
     ForEach ($instance in $instancesToKill){
         $id = $instance.InstanceId
-        Write-Output "      Removing instance $id"
+        Write-Output "      Terminating instance $id"
         Remove-EC2Instance -InstanceId $id -Force | out-null
     }
     
@@ -121,7 +120,6 @@ if ($numOfInstancesToKill -ne 0){
 $targetsToKill = Get-Targets
 $numOfTargetsToKill = $targetsToKill.Count
 Write-Output "    Number of targets to kill: $numOfTargetsToKill" 
-Write-Output $targetsToKill.id
 
 if ($numOfTargetsToKill -ne 0){
     # Killing all the targerts using the Octo API
