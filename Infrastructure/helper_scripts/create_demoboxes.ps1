@@ -192,18 +192,20 @@ if ($Wait){
             $time = [Math]::Floor([decimal]($stopwatch.Elapsed.TotalSeconds))
             
             # Checking the progress with IIS
+            $newMachineOnline = $false
             forEach ($ip in $ipAddresses){
-                $iisRunning = $false
                 if ($ip -notIn $machinesRunningIIS){
-                    Write-Output "Executing: Test-IIS -ip $ip"
                     $iisRunning = Test-IIS -ip $ip
                 }
                 if ($iisRunning){
                     $machinesRunningIIS += $ip
-                    $IISCount = $machinesRunningIIS.Count
-                    Write-Output "      IIS site is now available at $ip"
-                    Write-Output "      $IISCount out of $Count machines have successfully configured IIS"
+                    Write-Output "      Default IIS site is now available at $ip"
+                    $newMachineOnline = $true
                 }
+            }
+            if ($newMachineOnline){
+                $IISCount = $machinesRunningIIS.Count
+                Write-Output "      $IISCount out of $Count machines have successfully configured IIS."
             }
 
             # Note, this will need to be changed at some point 
