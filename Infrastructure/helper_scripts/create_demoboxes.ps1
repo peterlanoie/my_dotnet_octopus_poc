@@ -185,7 +185,7 @@ if ($Wait){
         $machinesRunningIIS = @()
     
         Write-Output "    Waiting for instances to register with Octopus Server."
-        Write-Output "    (It normally takes 3-4 minutes to set up IIS and about 7 to register with Octopus Server.)"
+        Write-Output "    (It normally takes 3-4 minutes to set up IIS and about 7 minutes to register with Octopus Server.)"
         $stopwatch.Restart()
 
         While (-not $allRegistered){
@@ -201,7 +201,7 @@ if ($Wait){
                 }
                 if ($iisRunning){
                     $machinesRunningIIS += $ip
-                    Write-Output "        Default IIS site is now available at $ip"
+                    Write-Output "            Default IIS site is now available at $ip"
                     $newMachineOnline = $true
                 }
             }
@@ -225,8 +225,8 @@ if ($Wait){
                         $name = $m.Name
                         $uri = $m.URI
                         $id = $m.Id
-                        Write-Output "        Machine $name registered with URI $uri"
-                        Write-Output "          Updating calamari on $name..."
+                        Write-Output "            Machine $name registered with URI $uri"
+                        Write-Output "              Updating calamari on $name..."
                         Update-Calimari -MachineID $id -MachineName $name
                         $machineNames += $name
                     }
@@ -242,8 +242,9 @@ if ($Wait){
             }
             else {
                 $IISCount = $machinesRunningIIS.Count
-                Write-Output "      $time seconds: $IISCount out of $Count machines have successfully configured IIS."
-                Write-Output "                     $NumRegistered out of $count machines have successfully registered with Octopus Server."
+                Write-Output "      $time seconds:"
+                Write-output "         $IISCount out of $Count machines have successfully configured IIS."
+                Write-Output "         $NumRegistered out of $count machines have successfully registered with Octopus Server."
             }
 
             # If we've been waiting an oddly long amount of time, raise a warning
