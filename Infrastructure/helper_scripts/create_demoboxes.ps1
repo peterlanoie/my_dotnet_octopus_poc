@@ -257,7 +257,7 @@ if ($Wait){
             }
             else {
                 $IISCount = $machinesRunningIIS.Count
-                Write-Output "      $time seconds: $IISCount successful IIS installs and $NumRegistered tentacles registered out of $count."
+                Write-Output "      $time seconds: $IISCount IIS installs and $NumRegistered tentacles registered out of $count."
             }
 
             # If we've been waiting an oddly long amount of time, raise a warning
