@@ -9,7 +9,7 @@ if (test-path $holdingFilePath){
 else {
     Write-Output "    Creating directory: $holdingFilePath"
     try {
-        New-Item -Type Directory $holdingFilePath
+        New-Item -Type Directory $holdingFilePath | out-null
     }
     catch {
         Write-Output "    Failed to create directory. This sometimes happens if two runbooks are running simultaneously on the same worker."
