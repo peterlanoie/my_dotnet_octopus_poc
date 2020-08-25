@@ -133,4 +133,15 @@ Write-Output "      AWS Tools is set up and ready to use."
 
 # Delete holding file
 Write-Output "    Removing holding file."
-Remove-Item $holdingFile
+try {
+    Remove-Item $holdingFile
+}
+catch {
+    if (test-path $holdingFilePath){
+        $holdingFileText = Get-Content -Path $holdingFile -Raw
+        Write-Error "Tried to delete holding file at $holdingFilePath, but it does exist. Content: $holdingFileText"
+    }
+    else {
+        Write-Warning "Tried to delete holding file at $holdingFilePath, but it wasnt there?"
+    }
+}
