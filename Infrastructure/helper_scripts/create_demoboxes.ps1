@@ -184,8 +184,8 @@ if ($Wait){
         $machineNames = @()
         $machinesRunningIIS = @()
     
-        Write-Output "    Waiting for instances to register with Octopus Server."
-        Write-Output "    (It normally takes 3-4 minutes to set up IIS and about 7 minutes to register with Octopus Server.)"
+        Write-Output "    Waiting for tentacles to register with Octopus Server."
+        Write-Output "    (It normally takes 3-5 minutes to set up IIS and 7-10 minutes to register tentacles.)"
         $stopwatch.Restart()
 
         While (-not $allRegistered){
