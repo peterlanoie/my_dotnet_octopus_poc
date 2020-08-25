@@ -201,7 +201,7 @@ if ($Wait){
                 }
                 if ($iisRunning){
                     $machinesRunningIIS += $ip
-                    Write-Output "            Default IIS site is now available at $ip"
+                    Write-Output "        Default IIS site is now available at $ip"
                     $newMachineOnline = $true
                 }
             }
@@ -217,19 +217,34 @@ if ($Wait){
             $MachinesInRole = @()
             $MachinesInRole += $machines | Where-Object {$Role -in $_.Roles}
             
-            # If we've found a new machine. Logging the details and updating Calimari
+            # If we've found a new machine, logging the details
             $NumRegistered = $MachinesInRole.Count
+            $newlyRegisteredMachines = @()
             if ($NumRegistered -gt $machineNames.Count){
                 ForEach ($m in $MachinesInRole){
                     if ($m.Name -notin $machineNames){
                         $name = $m.Name
                         $uri = $m.URI
                         $id = $m.Id
-                        Write-Output "            Machine $name registered with URI $uri"
-                        Write-Output "              Updating calamari on $name..."
-                        Update-Calimari -MachineID $id -MachineName $name
+                        Write-Output "        Machine $name registered with URI $uri"
+                        $machine = @{ id = $id; name = $name}
+                        $newlyRegisteredMachines += $machine
                         $machineNames += $name
                     }
+                }
+            }
+            # If we've found any new machines, updating Calimari on each
+            if ($newlyRegisteredMachines.Count -gt 0){
+                $updateCalimariMsg = "          Updating Calimari on the following machines:"
+                foreach ($machine in $newlyRegisteredMachines){
+                    $name = $machine.name
+                    $updateCalimariMsg += " $name,"
+                }
+                Write-Output $updateCalimariMsg
+                foreach ($machine in $newlyRegisteredMachines){
+                    $id = $machine.id
+                    $name = $machine.name
+                    Update-Calimari -MachineID $id -MachineName $name
                 }
             }
         
@@ -242,9 +257,7 @@ if ($Wait){
             }
             else {
                 $IISCount = $machinesRunningIIS.Count
-                Write-Output "      $time seconds:"
-                Write-output "         $IISCount out of $Count machines have successfully configured IIS."
-                Write-Output "         $NumRegistered out of $count machines have successfully registered with Octopus Server."
+                Write-Output "      $time seconds: $IISCount successful IIS installs and $NumRegistered tentacles registered out of $count."
             }
 
             # If we've been waiting an oddly long amount of time, raise a warning
