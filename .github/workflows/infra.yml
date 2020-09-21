@@ -70,7 +70,7 @@ jobs:
         Write-Output "Repo owner is: $repoOwner"
         Write-Output "Repo name is: $repoName"
         
-        $userDataPath = "D:\a\$repoName\$repoName\helper_scripts\VM_UserData.ps1"
+        $userDataPath = "D:\a\$repoName\$repoName\Infrastructure\helper_scripts\VM_UserData.ps1"
         $oldUserData = Get-Content -Path $userDataPath -Raw
 
         $userDataWithOwner = $oldUserData.replace("__REPOOWNER__",$repoOwner)
