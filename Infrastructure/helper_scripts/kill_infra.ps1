@@ -84,7 +84,7 @@ else {
 function Get-Instances {
     # Using AWS PowerShell to find target instances
     $targetStates = @("pending", "running")
-    $instances = (Get-EC2Instance -Filter @{Name="tag:$project";Values=$octoEnvName}, @{Name="instance-state-name";Values=$targetStates}).Instances
+    $instances = (Get-EC2Instance -Filter @{Name="tag:$project-*";Values=$octoEnvName}, @{Name="instance-state-name";Values=$targetStates}).Instances
     return $instances
 }
 
