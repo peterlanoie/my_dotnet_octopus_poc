@@ -207,7 +207,7 @@ if ($Wait){
             }
 
             # Note, this will need to be changed at some point 
-            $Role = "web-server" 
+            $Role = "RandomQuotes-WebServer" 
 
             # Calling the API to find get machine data
             $envID = $OctopusParameters["Octopus.Environment.Id"]

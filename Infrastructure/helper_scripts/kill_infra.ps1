@@ -1,9 +1,7 @@
 param(
     $project = "",
-    $role = "web-server", # Note, in future we will migrate to roles in format "RandomQuotes-web"
-                          # When that happens we can infer role from $project and kill all machines
-                          # That match the pattern "$project-*"
     $octoUrl = "",
+    $role = "RandomQuotes-WebServer",
     $octoEnvName = "",
     $octoApiKey = "",
     $spaceId = "Spaces-1" # If you are using the non-default space you will need to update this
