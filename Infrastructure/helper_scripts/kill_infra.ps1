@@ -87,7 +87,7 @@ function Get-Instances {
     $allProjectTags = @()
     ForEach ($tag in $allTags){
         if ($tag.Key -like "$project*"){
-            $projectTags += $tag.Key
+            $allProjectTags += $tag.Key
         }
     }
     $uniqueProjectTags = $allProjectTags | Select-Object -Unique
