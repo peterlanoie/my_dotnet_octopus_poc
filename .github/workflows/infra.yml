@@ -61,7 +61,7 @@ jobs:
     
     - name: Update UserData file to pull helper scripts from correct repo
       run: |
-        $repo = ${env:GITHUB_REPOSITORY}"
+        $repo = ${env:GITHUB_REPOSITORY}
         
         $repoSplits = $repo -split "/"
         $repoOwner = $repoSplits[0]
