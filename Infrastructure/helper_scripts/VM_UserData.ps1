@@ -16,8 +16,8 @@ Start-Transcript -path $log -append
 Function Get-Script{
   param (
     [Parameter(Mandatory=$true)][string]$script,
-    [string]$owner = "dlmconsultants",
-    [string]$repo = "my_dotnet_octopus_poc",
+    [string]$owner = "__REPOOWNER__",
+    [string]$repo = "__REPONAME__",
     [string]$branch = "main",
     [string]$path = "Infrastructure/UserDataDownloads",
     [string]$outFile = ".\$repo\$script"
@@ -60,3 +60,6 @@ DEPLOY TENTACLE #>
 
 Write-Output "VM_UserData startup script completed..."
 </powershell>
+
+
+
