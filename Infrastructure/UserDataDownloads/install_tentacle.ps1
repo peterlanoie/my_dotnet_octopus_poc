@@ -127,7 +127,7 @@ function Install-Tentacle
     throw "Installation failed on register-with"
   }
  
-  & .\tentacle.exe service --instance "Tentacle" --install --start --console | Write-Output
+  & .\tentacle.exe service --instance "Tentacle" --install --start --username ".\octopus" --console | Write-Output
   if ($lastExitCode -ne 0) {
     throw "Installation failed on service install"
   }
