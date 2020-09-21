@@ -84,8 +84,20 @@ else {
 function Get-Instances {
     # Using AWS PowerShell to find target instances
     $targetStates = @("pending", "running")
-    $instances = (Get-EC2Instance -Filter @{Name="tag:$project-*";Values=$octoEnvName}, @{Name="instance-state-name";Values=$targetStates}).Instances
-    return $instances
+    $allTags = Get-EC2Tag
+    $allProjectTags = @()
+    ForEach ($tag in $allTags){
+        if ($tag.Key -like "$project*"){
+            $projectTags += $tag.Key
+        }
+    }
+    $uniqueProjectTags = $allProjectTags | Select-Object -Unique
+    $allInstances = @()
+    ForEach ($uniqueTag in $uniqueProjectTags){
+        $instances = (Get-EC2Instance -Filter @{Name="tag:$uniqueTag";Values=$octoEnvName}, @{Name="instance-state-name";Values=$targetStates}).Instances
+        $allInstances += $instances
+    }   
+    return $allInstances
 }
 
 function Get-Targets {
@@ -93,7 +105,12 @@ function Get-Targets {
     $environment = (Invoke-WebRequest "$octoUrl/api/environments/$octoEnvId" -Headers $octoApiHeader -UseBasicParsing).content | ConvertFrom-Json
     $environmentMachines = $environment.Links.Machines.Split("{")[0]
     $machines = ((Invoke-WebRequest ($octoUrl + $environmentMachines) -Headers $octoApiHeader -UseBasicParsing).content | ConvertFrom-Json).items
-    $targets = $machines | Where-Object {$role -in $_.Roles}
+    $targets = @()
+    foreach ($machine in $machines){
+        if ($machine.Roles -like "$project*"){
+            $targets += $machine
+        }
+    }
     return $targets
 }
 
