@@ -61,6 +61,8 @@ jobs:
     
     - name: Update UserData file to pull helper scripts from correct repo
       run: |
+        $invocationPath = Split-Path $script:MyInvocation.MyCommand.Path
+        Write-Output "my invocation path is: $invocationPath"
         Write-Output "Executing .\my_dotnet_octopus_poc\Infrastructure\substitute_repo_name.ps1 -repo ${env:GITHUB_REPOSITORY}" 
         .\my_dotnet_octopus_poc\Infrastructure\substitute_repo_name.ps1 -repo ${env:GITHUB_REPOSITORY}
       shell: powershell  
