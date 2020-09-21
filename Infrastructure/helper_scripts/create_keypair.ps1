@@ -1,5 +1,5 @@
 param(
-    $keyPairName = "octopus-demobox",
+    $keyPairName = "RandomQuotes",
     $keyPairDir = "C:\keypairs"
 )
 

@@ -2,7 +2,7 @@ param(
     $awsAccessKey = "",
     $awsSecretKey = "",
     $defaulAwsRegion = "eu-west-1", # Other carbon neutral regions are listed here: https://aws.amazon.com/about-aws/sustainability/
-    $securityGroupName = "octopus-demobox",
+    $securityGroupName = "RandomQuotes",
     $count = 1,
     $instanceType = "t2.micro", # 1 vCPU, 1GiB Mem, free tier elligible: https://aws.amazon.com/ec2/instance-types/
     $ami = "ami-0d2455a34bf134234", # Microsoft Windows Server 2019 Base with Containers
@@ -108,7 +108,7 @@ Write-Output "  Parameters: -securityGroupName $securityGroupName"
 Write-Output "*"
 
 # Creates the VMs
-Write-Output "Executing .\helper_scripts\create_demoboxes.ps1..."
+Write-Output "Executing .\helper_scripts\build_infra.ps1..."
 Write-Output "  Parameters: -count $count -instanceType $instanceType -ami $ami -tagName $tagName -tagValue $tagValue -octoUrl $octoUrl -octoEnv $octoEnv -DeployTentacle:$DeployTentacle -Wait"
-& $PSScriptRoot\helper_scripts\create_demoboxes.ps1 -count $count -instanceType $instanceType -ami $ami -tagName $tagName -tagValue $tagValue -octoUrl $octoUrl -octoEnv $octoEnv -DeployTentacle:$DeployTentacle -Wait
+& $PSScriptRoot\helper_scripts\build_infra.ps1 -count $count -instanceType $instanceType -ami $ami -tagName $tagName -tagValue $tagValue -octoUrl $octoUrl -octoEnv $octoEnv -DeployTentacle:$DeployTentacle -Wait
 Write-Output "*"

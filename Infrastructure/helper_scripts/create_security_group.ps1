@@ -1,5 +1,5 @@
 param(
-    $securityGroupName = "octopus-demobox"
+    $securityGroupName = "RandomQuotes"
 )
 
 $ErrorActionPreference = "Stop"  

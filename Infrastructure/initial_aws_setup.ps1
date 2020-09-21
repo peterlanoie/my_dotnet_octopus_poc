@@ -2,9 +2,9 @@ param(
     [Parameter(Mandatory)][ValidateNotNullOrEmpty()]$awsAccessKey,
     [Parameter(Mandatory)][ValidateNotNullOrEmpty()]$awsSecretKey,
     $defaulAwsRegion = "eu-west-1", # Other carbon neutral regions are listed here: https://aws.amazon.com/about-aws/sustainability/
-    $keyPairName = "octopus-demobox",
+    $keyPairName = "RandomQuotes",
     $keyPairDir = "C:\keypairs",
-    $securityGroupName = "octopus-demobox"
+    $securityGroupName = "RandomQuotes"
 )
 
 $ErrorActionPreference = "Stop"  
@@ -36,7 +36,7 @@ Write-Output "Executing .\helper_scripts\create_AWS_role.ps1..."
 Write-Output "  (No parameters)"
 & $PSScriptRoot\helper_scripts\create_AWS_role.ps1
 
-# Creates an octopus-demobox profile containing the SecretsManager role for all demoboxes
+# Creates a RandomQuotes profile containing the SecretsManager role for all VMs
 # This allows the VMs to access secrets manager, which allows us to avoid hardcoding passwords into sourcecode/the userdata file
 Write-Output "Executing .\helper_scripts\add_role_to_profile.ps1..."
 Write-Output "  (No parameters)"

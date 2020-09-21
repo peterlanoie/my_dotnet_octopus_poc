@@ -1,2 +1,2 @@
-﻿New-IAMInstanceProfile -InstanceProfileName octopus-demobox
-Add-IAMRoleToInstanceProfile -InstanceProfileName octopus-demobox -RoleName SecretsManager
+﻿New-IAMInstanceProfile -InstanceProfileName RandomQuotes
+Add-IAMRoleToInstanceProfile -InstanceProfileName RandomQuotes -RoleName SecretsManager
