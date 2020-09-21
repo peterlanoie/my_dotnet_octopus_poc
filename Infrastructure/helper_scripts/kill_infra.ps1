@@ -1,7 +1,6 @@
 param(
     $project = "",
     $octoUrl = "",
-    $role = "RandomQuotes-WebServer",
     $octoEnvName = "",
     $octoApiKey = "",
     $spaceId = "Spaces-1" # If you are using the non-default space you will need to update this
