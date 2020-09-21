@@ -58,7 +58,13 @@ jobs:
         Write-Host "Setting version number to: $versionNumber"
         echo "::set-env name=PACKAGE_VERSION::$versionNumber"        
       shell: powershell
-  
+    
+    - name: Update UserData file to pull helper scripts from correct repo
+      run: |
+        Write-Output "Executing .\my_dotnet_octopus_poc\Infrastructure\substitute_repo_name.ps1 -repo ${env:GITHUB_REPOSITORY}" 
+        .\my_dotnet_octopus_poc\Infrastructure\substitute_repo_name.ps1 -repo ${env:GITHUB_REPOSITORY}
+      shell: powershell  
+
     - name: Setup NuGet.exe for use with actions
       uses: NuGet/setup-nuget@v1.0.2
 
