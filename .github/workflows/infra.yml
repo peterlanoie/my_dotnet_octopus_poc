@@ -61,10 +61,19 @@ jobs:
     
     - name: Update UserData file to pull helper scripts from correct repo
       run: |
-        $invocationPath = Split-Path $script:MyInvocation.MyCommand.Path
-        Write-Output "my invocation path is: $invocationPath"
-        Write-Output "Executing .\my_dotnet_octopus_poc\Infrastructure\substitute_repo_name.ps1 -repo ${env:GITHUB_REPOSITORY}" 
-        .\my_dotnet_octopus_poc\Infrastructure\substitute_repo_name.ps1 -repo ${env:GITHUB_REPOSITORY}
+        $repo = ${env:GITHUB_REPOSITORY}"
+        
+        $repoSplits = $repo -split "/"
+        $repoOwner = $repoSplits[0]
+        $repoName = $repoSplits[1]
+        
+        $userDataPath = "D:\a\$repoName\$repoName\helper_scripts\VM_UserData.ps1"
+        $oldUserData = Get-Content -Path $userDataPath -Raw
+
+        $userDataWithOwner = $oldUserData.replace("__REPOOWNER__",$repoOwner)
+        $newUserData = $userDataWithOwner.replace("__REPONAME__",$repoName)
+
+        Set-Content -Path $userDataPath  -Value $newUserData
       shell: powershell  
 
     - name: Setup NuGet.exe for use with actions
