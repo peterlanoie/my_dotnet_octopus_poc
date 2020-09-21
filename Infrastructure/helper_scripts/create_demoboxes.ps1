@@ -2,7 +2,7 @@ param(
     $count = 1,
     $instanceType = "t2.micro", # 1 vCPU, 1GiB Mem, free tier elligible: https://aws.amazon.com/ec2/instance-types/
     $ami = "ami-0d2455a34bf134234", # Microsoft Windows Server 2019 Base with Containers
-    $tagName = "RandomQuotes",
+    $role = "RandomQuotes-WebServer",
     $tagValue = "Created manually",
     $octoUrl = "",
     $octoEnv = "",
@@ -40,9 +40,9 @@ Write-Output "    Base 64 encoding UserData."
 $encodedUserData = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($userData))
 
 # Checking how many instances are already running
-Write-Output "    Checking how many instances are already running with tag $tagName and value $tagValue..."
+Write-Output "    Checking how many instances are already running with tag $role and value $tagValue..."
 $acceptableStates = @("pending", "running")
-$PreExistingInstances = (Get-EC2Instance -Filter @{Name="tag:$tagName";Values=$tagValue}, @{Name="instance-state-name";Values=$acceptableStates}).Instances 
+$PreExistingInstances = (Get-EC2Instance -Filter @{Name="tag:$role";Values=$tagValue}, @{Name="instance-state-name";Values=$acceptableStates}).Instances 
 $before = $PreExistingInstances.count
 Write-Output "      $before instances are already running." 
 $totalRequired = $count - $PreExistingInstances.count
@@ -55,14 +55,14 @@ if ($totalRequired -gt 0){
     Write-Output "    Launching $totalRequired instances of type $instanceType and ami $ami."
     
 
-    Write-Output "      Instances will each have tag $tagName with value $tagValue."
+    Write-Output "      Instances will each have tag $role with value $tagValue."
 
     $NewInstance = New-EC2Instance -ImageId $ami -MinCount $totalRequired -MaxCount $totalRequired -InstanceType $instanceType -UserData $encodedUserData -KeyName octopus-demobox -SecurityGroup octopus-demobox -IamInstanceProfile_Name octopus-demobox
 
     # Tagging all the instances
     ForEach ($InstanceID  in ($NewInstance.Instances).InstanceId){
         New-EC2Tag -Resources $( $InstanceID ) -Tags @(
-            @{ Key=$tagName; Value=$tagValue}
+            @{ Key=$role; Value=$tagValue}
         );
     }
 }
@@ -72,7 +72,7 @@ $err = "There is a problem with the following instances: "
 
 # Checking if it worked
 Write-Output "    Verifying that all instances have been/are being created: "
-$instances = (Get-EC2Instance -Filter @{Name="tag:$tagName";Values=$tagValue}, @{Name="instance-state-name";Values=$acceptableStates}).Instances
+$instances = (Get-EC2Instance -Filter @{Name="tag:$role";Values=$tagValue}, @{Name="instance-state-name";Values=$acceptableStates}).Instances
 
 ForEach ($instance in $instances){
     $id = $instance.InstanceId
@@ -117,7 +117,7 @@ if ($Wait){
             $runningWarningGiven = $true
         }
         
-        $runningInstances = (Get-EC2Instance -Filter @{Name="tag:$tagName";Values=$tagValue}, @{Name="instance-state-name";Values="running"}).Instances
+        $runningInstances = (Get-EC2Instance -Filter @{Name="tag:$role";Values=$tagValue}, @{Name="instance-state-name";Values="running"}).Instances
         $NumRunning = $runningInstances.count
         
         if ($NumRunning -eq $count){
@@ -206,16 +206,13 @@ if ($Wait){
                 }
             }
 
-            # Note, this will need to be changed at some point 
-            $Role = "RandomQuotes-WebServer" 
-
             # Calling the API to find get machine data
             $envID = $OctopusParameters["Octopus.Environment.Id"]
             $environment = (Invoke-WebRequest "$octoUrl/api/environments/$envID" -Headers $header -UseBasicParsing).content | ConvertFrom-Json
             $environmentMachines = $Environment.Links.Machines.Split("{")[0]
             $machines = ((Invoke-WebRequest ($octoUrl + $environmentMachines) -Headers $header -UseBasicParsing).content | ConvertFrom-Json).items
             $MachinesInRole = @()
-            $MachinesInRole += $machines | Where-Object {$Role -in $_.Roles}
+            $MachinesInRole += $machines | Where-Object {$role -in $_.Roles}
             
             # If we've found a new machine, logging the details
             $NumRegistered = $MachinesInRole.Count
