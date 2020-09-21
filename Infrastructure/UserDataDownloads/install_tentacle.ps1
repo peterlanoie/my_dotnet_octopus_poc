@@ -137,3 +137,7 @@ function Install-Tentacle
 
 # Installing the Octopus Tentacle
 Install-Tentacle -apikey $apiKey -octopusServerUrl $octopusServerUrl -environment $registerInEnvironments -role $registerInRoles
+
+Write-Output "  Reconfiguring tentacle to run as .\octopus"
+Set-Location "${env:ProgramFiles}\Octopus Deploy\Tentacle"
+& .\tentacle.exe service --reconfigure --username ".\octopus" --restart | Write-Output
