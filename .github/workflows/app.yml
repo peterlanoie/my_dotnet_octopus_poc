@@ -55,7 +55,7 @@ jobs:
           echo "This branch is main. No prerelease suffix required."
         else
           NUGETSUFFIX="-$BRANCH_NAME" | tr / _ # replacing slashes with underscores
-          echo 'The nuget suffix is:' $NUGETSUFFIX
+          echo 'The nuget suffix is:' NUGETSUFFIX
           echo "This branch is not main. Adding prerelease suffix to NuGet version number."
         fi
         echo "::set-env name=SUFFIX::$(echo $NUGETSUFFIX)"
