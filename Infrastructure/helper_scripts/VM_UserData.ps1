@@ -21,7 +21,7 @@ Function Get-Script{
     [string]$branch = "main",
     [string]$path = "Infrastructure\UserDataDownloads",
     [string]$outDir = "scripts",
-    [string]$outFile = ".\$outDir\$script"
+    [string]$outFile = ".\scripts\$script"
   )
   if ((test-path $path) -ne $true) {
     Write-Output "  Creating directory $startupDir\$outDir"
