@@ -10,10 +10,10 @@ function Download-File
   $downloader.DownloadFile($url, $saveAs)
 }
 
-# Installing ASP.NET Core 2.0 Runtime (v2.0.3) - Windows Hosting Bundle Installer so that we can deploy ,.NET Core v2.0 websites
-
-$dotnetUrl = "https://download.microsoft.com/download/5/C/1/5C190037-632B-443D-842D-39085F02E1E8/DotNetCore.2.0.3-WindowsHosting.exe"
-$dotnetHostingBundleInstaller = "$startupDir/DotNetCore.2.0.3-WindowsHosting.exe"
+# Installing ASP.NET Core Runtime - Windows Hosting Bundle Installer so that we can deploy ,.NET Core websites
+$dotnetversion = "3.1.8"
+$dotnetUrl = "https://download.visualstudio.microsoft.com/download/pr/854cbd11-4b96-4a44-9664-b95991c0c4f7/8ec4944a5bd770faba2f769e647b1e6e/dotnet-hosting-3.1.8-win.exe"
+$dotnetHostingBundleInstaller = "$startupDir/dotnet-hosting-$dotnetversion-win.exe"
 
 if ((test-path $dotnetHostingBundleInstaller) -ne $true) {
     Download-File -url $dotnetUrl -SaveAs $dotnetHostingBundleInstaller 
@@ -22,7 +22,7 @@ else {
     Write-Output "  dotnet core hosting bundle already downloaded to $dotnetHostingBundleInstaller"
 }
 
-Write-Output "  Installing ASP.NET Core 2.0 Runtime (v2.0.3) - Windows Hosting Bundle Installer."
+Write-Output "  Installing ASP.NET Core Runtime (v$dotnetversion) - Windows Hosting Bundle Installer."
 $args = New-Object -TypeName System.Collections.Generic.List[System.String]
 $args.Add("/quiet")
 $args.Add("/install")
