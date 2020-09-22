@@ -58,7 +58,27 @@ jobs:
         Write-Host "Setting version number to: $versionNumber"
         echo "::set-env name=PACKAGE_VERSION::$versionNumber"        
       shell: powershell
-  
+    
+    - name: Update UserData file to pull helper scripts from correct repo
+      run: |
+        $repo = ${env:GITHUB_REPOSITORY}
+        
+        $repoSplits = $repo -split "/"
+        $repoOwner = $repoSplits[0]
+        $repoName = $repoSplits[1]
+
+        Write-Output "Repo owner is: $repoOwner"
+        Write-Output "Repo name is: $repoName"
+        
+        $userDataPath = "D:\a\$repoName\$repoName\Infrastructure\helper_scripts\VM_UserData.ps1"
+        $oldUserData = Get-Content -Path $userDataPath -Raw
+
+        $userDataWithOwner = $oldUserData.replace("__REPOOWNER__",$repoOwner)
+        $newUserData = $userDataWithOwner.replace("__REPONAME__",$repoName)
+
+        Set-Content -Path $userDataPath  -Value $newUserData
+      shell: powershell  
+
     - name: Setup NuGet.exe for use with actions
       uses: NuGet/setup-nuget@v1.0.2
 
