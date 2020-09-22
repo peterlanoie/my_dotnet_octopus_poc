@@ -22,7 +22,7 @@ env:
   PACKAGE_NAME: RandomQuotes_application
   OCTOPUS_PROJECT_NAME: RandomQuotes  
   OCTOPUS_SPACE_NAME: Default
-  PACKAGE_VERSION: 0.0.${{ github.run_number }}
+  PACKAGE_VERSION: ${{ github.run_number }}
 
 jobs:
   build:
@@ -31,7 +31,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      
+
+    - name: Read version number
+      shell: bash
+      run: |
+        versionprefix=`cat versionprefix.txt`  
+        echo "$versionprefix"
+        echo "::set-env name=VERSION_PREFIX::$versionprefix
+      id: extract_version
+    
     # extract branch name
     - name: Extract branch name
       if: github.event_name != 'pull_request'
@@ -94,7 +102,7 @@ jobs:
         sudo apt update && sudo apt install octopuscli
     
     - name: Pack
-      run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$PACKAGE_VERSION$SUFFIX
+      run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$VERSION_PREFIX.$PACKAGE_VERSION$SUFFIX
     
     - name: Handoff to Octopus Deploy
       env:
