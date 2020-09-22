@@ -20,7 +20,7 @@ Function Get-Script{
     [string]$repo = "__REPONAME__",
     [string]$branch = "main",
     [string]$path = "Infrastructure/UserDataDownloads",
-    [string]$outFile = ".\$repo\$script"
+    [string]$outFile = ".\$path\$script"
   )
   if ((test-path $repo) -ne $true) {
     Write-Output "  Creating directory $startupDir\$repo"
@@ -35,18 +35,18 @@ Function Get-Script{
 
 Write-Output "*"
 Get-Script -script "setup_users.ps1"
-Write-Output "Executing ./my_dotnet_octopus_poc/setup_users.ps1"
-./my_dotnet_octopus_poc/setup_users.ps1
+Write-Output "Executing ./$path/setup_users.ps1"
+./$path/setup_users.ps1
 
 Write-Output "*"
 Get-Script -script "setup_iis.ps1"
-Write-Output "Executing ./my_dotnet_octopus_poc/setup_iis.ps1"
-./my_dotnet_octopus_poc/setup_iis.ps1
+Write-Output "Executing ./$path/setup_iis.ps1"
+./$path/setup_iis.ps1
 
 Write-Output "*"
 Get-Script -script "setup_dotnet_core.ps1"
-Write-Output "Executing ./my_dotnet_octopus_poc/setup_dotnet_core.ps1"
-./my_dotnet_octopus_poc/setup_dotnet_core.ps1
+Write-Output "Executing ./$path/setup_dotnet_core.ps1"
+./$path/setup_dotnet_core.ps1
 
 <# DEPLOY TENTACLE
 $octopusServerUrl = "__OCTOPUSURL__"
@@ -54,8 +54,8 @@ $registerInEnvironments = "__ENV__"
 
 Write-Output "*"
 Get-Script -script "install_tentacle.ps1"
-Write-Output "Executing ./my_dotnet_octopus_poc/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments"
-./my_dotnet_octopus_poc/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments
+Write-Output "Executing ./$path/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments"
+./$path/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments
 DEPLOY TENTACLE #>
 
 Write-Output "VM_UserData startup script completed..."

@@ -22,7 +22,7 @@ env:
   PACKAGE_NAME: RandomQuotes_application
   OCTOPUS_PROJECT_NAME: RandomQuotes  
   OCTOPUS_SPACE_NAME: Default
-  PACKAGE_VERSION: 0.0.${{ github.run_number }}
+  PATCH_NUMBER: ${{ github.run_number }}
 
 jobs:
   build:
@@ -31,7 +31,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      
+
+    - name: Read version number
+      shell: bash
+      run: |
+        majorMinorVersion=`cat versionprefix.txt`  
+        echo 'The major.minor version is: ' $majorMinorVersion
+        echo "::set-env name=MAJOR_MINOR_VERSION::$(echo $majorMinorVersion)"
+      id: extract_version
+    
     # extract branch name
     - name: Extract branch name
       if: github.event_name != 'pull_request'
@@ -71,6 +79,8 @@ jobs:
         echo OCTOPUS_SPACE_NAME is: $OCTOPUS_SPACE_NAME 
         echo BRANCH_NAME is: $BRANCH_NAME
         echo SUFFIX is: $SUFFIX
+        echo MAJOR_MINOR_VERSION is: $MAJOR_MINOR_VERSION
+        echo PATCH_NUMBER is: $PATCH_NUMBER
       
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
@@ -94,10 +104,10 @@ jobs:
         sudo apt update && sudo apt install octopuscli
     
     - name: Pack
-      run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$PACKAGE_VERSION$SUFFIX
+      run: octo pack --basePath=Application/RandomQuotes/$MARSHALLING_FOLDER --outFolder=$ARTIFACTS_FOLDER --id=$PACKAGE_NAME --version=$MAJOR_MINOR_VERSION.$PATCH_NUMBER$SUFFIX
     
     - name: Handoff to Octopus Deploy
       env:
         OCTOPUS_URL: ${{ secrets.OCTOPUS_SERVER_URL }}
         OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY }}
-      run: octo push --package="$ARTIFACTS_FOLDER/$PACKAGE_NAME.$PACKAGE_VERSION$SUFFIX.nupkg" --server=$OCTOPUS_URL --apiKey=$OCTOPUS_API_KEY --space=$OCTOPUS_SPACE_NAME
+      run: octo push --package="$ARTIFACTS_FOLDER/$PACKAGE_NAME.$MAJOR_MINOR_VERSION.$PATCH_NUMBER$SUFFIX.nupkg" --server=$OCTOPUS_URL --apiKey=$OCTOPUS_API_KEY --space=$OCTOPUS_SPACE_NAME
