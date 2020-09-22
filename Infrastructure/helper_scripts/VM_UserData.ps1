@@ -19,12 +19,13 @@ Function Get-Script{
     [string]$owner = "__REPOOWNER__",
     [string]$repo = "__REPONAME__",
     [string]$branch = "main",
-    [string]$path = "scripts",
-    [string]$outFile = ".\$path\$script"
+    [string]$path = "Infrastructure\UserDataDownloads",
+    [string]$outDir = "scripts",
+    [string]$outFile = ".\$outDir\$script"
   )
   if ((test-path $path) -ne $true) {
-    Write-Output "  Creating directory $startupDir\$path"
-    New-Item -ItemType "Directory" -Path $path
+    Write-Output "  Creating directory $startupDir\$outDir"
+    New-Item -ItemType "Directory" -Path $outDir
   }
   $uri = "https://raw.githubusercontent.com/$owner/$repo/$branch/$path/$script"
   Write-Output "Downloading $script"
@@ -35,18 +36,18 @@ Function Get-Script{
 
 Write-Output "*"
 Get-Script -script "setup_users.ps1"
-Write-Output "Executing ./$path/setup_users.ps1"
-./$path/setup_users.ps1
+Write-Output "Executing ./$outDir/setup_users.ps1"
+./$outDir/setup_users.ps1
 
 Write-Output "*"
 Get-Script -script "setup_iis.ps1"
-Write-Output "Executing ./$path/setup_iis.ps1"
-./$path/setup_iis.ps1
+Write-Output "Executing ./$outDir/setup_iis.ps1"
+./$outDir/setup_iis.ps1
 
 Write-Output "*"
 Get-Script -script "setup_dotnet_core.ps1"
-Write-Output "Executing ./$path/setup_dotnet_core.ps1"
-./$path/setup_dotnet_core.ps1
+Write-Output "Executing ./$outDir/setup_dotnet_core.ps1"
+./$outDir/setup_dotnet_core.ps1
 
 <# DEPLOY TENTACLE
 $octopusServerUrl = "__OCTOPUSURL__"
@@ -54,8 +55,8 @@ $registerInEnvironments = "__ENV__"
 
 Write-Output "*"
 Get-Script -script "install_tentacle.ps1"
-Write-Output "Executing ./$path/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments"
-./$path/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments
+Write-Output "Executing ./$outDir/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments"
+./$outDir/install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments
 DEPLOY TENTACLE #>
 
 Write-Output "VM_UserData startup script completed..."
