@@ -22,9 +22,9 @@ Function Get-Script{
     [string]$path = "scripts",
     [string]$outFile = ".\$path\$script"
   )
-  if ((test-path $repo) -ne $true) {
-    Write-Output "  Creating directory $startupDir\$repo"
-    New-Item -ItemType "Directory" -Path $repo
+  if ((test-path $path) -ne $true) {
+    Write-Output "  Creating directory $startupDir\$path"
+    New-Item -ItemType "Directory" -Path $path
   }
   $uri = "https://raw.githubusercontent.com/$owner/$repo/$branch/$path/$script"
   Write-Output "Downloading $script"
