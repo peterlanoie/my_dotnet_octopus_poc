@@ -11,8 +11,8 @@ function Download-File
 }
 
 # Installing ASP.NET Core Runtime - Windows Hosting Bundle Installer so that we can deploy ,.NET Core websites
-$dotnetversion = "3.1.8"
-$dotnetUrl = "https://download.visualstudio.microsoft.com/download/pr/854cbd11-4b96-4a44-9664-b95991c0c4f7/8ec4944a5bd770faba2f769e647b1e6e/dotnet-hosting-3.1.8-win.exe"
+$dotnetversion = "2.1.22"
+$dotnetUrl = "https://download.visualstudio.microsoft.com/download/pr/2fe0ef0c-a6b6-4cda-b6b8-874068bb131f/709d1c7817fa19524089dda74933ddce/dotnet-hosting-2.1.22-win.exe"
 $dotnetHostingBundleInstaller = "$startupDir/dotnet-hosting-$dotnetversion-win.exe"
 
 if ((test-path $dotnetHostingBundleInstaller) -ne $true) {
