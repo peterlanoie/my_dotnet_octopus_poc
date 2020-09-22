@@ -37,7 +37,7 @@ jobs:
       run: |
         versionprefix=`cat versionprefix.txt`  
         echo 'The version prefix is: ' $versionprefix
-        echo "::set-env name=VERSION_PREFIX::$versionprefix
+        echo "::set-env name=VERSION_PREFIX::$(echo $versionprefix)
       id: extract_version
     
     # extract branch name
