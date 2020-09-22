@@ -19,7 +19,7 @@ Function Get-Script{
     [string]$owner = "__REPOOWNER__",
     [string]$repo = "__REPONAME__",
     [string]$branch = "main",
-    [string]$path = "Infrastructure/UserDataDownloads",
+    [string]$path = "scripts",
     [string]$outFile = ".\$path\$script"
   )
   if ((test-path $repo) -ne $true) {
