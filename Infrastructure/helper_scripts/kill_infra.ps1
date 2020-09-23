@@ -94,7 +94,9 @@ function Get-Instances {
     $allInstances = @()
     ForEach ($uniqueTag in $uniqueProjectTags){
         $instances = (Get-EC2Instance -Filter @{Name="tag:$uniqueTag";Values=$octoEnvName}, @{Name="instance-state-name";Values=$targetStates}).Instances
-        $allInstances += $instances
+        if ($instances.Count -ne 0){
+            $allInstances += $instances
+        }
     }   
     return $allInstances
 }
