@@ -106,7 +106,7 @@ function Get-Targets {
     $machines = ((Invoke-WebRequest ($octoUrl + $environmentMachines) -Headers $octoApiHeader -UseBasicParsing).content | ConvertFrom-Json).items
     $targets = @()
     foreach ($machine in $machines){
-        if ($machine.Roles -like "$project*"){
+        if ($machine.Roles -like "$project-*"){
             $targets += $machine
         }
     }
