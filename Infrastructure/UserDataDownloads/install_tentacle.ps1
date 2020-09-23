@@ -2,7 +2,7 @@ param (
   [Parameter(Mandatory=$true)]$octopusServerUrl,
   [Parameter(Mandatory=$true)]$registerInEnvironments,
   $tentacleDownloadPath = "http://octopusdeploy.com/downloads/latest/OctopusTentacle64",
-  $registerInRoles = "RandomQuotes-WebServer",
+  $registerInRoles = "VariableSubstitutionFailedForVMUserDataScript",
   $tentacleListenPort = 10933,
   $tentacleHomeDirectory = "C:\Octopus",
   $tentacleAppDirectory = "C:\Octopus\Applications",
