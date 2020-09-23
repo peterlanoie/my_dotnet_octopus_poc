@@ -86,7 +86,7 @@ function Get-Instances {
     $allTags = Get-EC2Tag
     $allProjectTags = @()
     ForEach ($tag in $allTags){
-        if ($tag.Key -like "$project*"){
+        if ($tag.Key -like "$project-*"){
             $allProjectTags += $tag.Key
         }
     }
