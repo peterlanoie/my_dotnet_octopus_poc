@@ -126,8 +126,7 @@ if ($Installedmodules.name -contains "AWS.Tools.IdentityManagement"){
 else {
     Write-Output "      AWS.Tools.IdentityManagement is not installed."
     Write-Output "        Installing AWS.Tools.IdentityManagement..."
-    # Install-Module AWS.Tools.IdentityManagement -Force
-    Write-Warning "Skipping the AWS.Tools.IdentityManagement install because it started failing on 7th Oct and I've not had time to fix it yet"
+    Install-Module AWS.Tools.IdentityManagement -Force
 }
 
 Write-Output "      AWS Tools is set up and ready to use."
