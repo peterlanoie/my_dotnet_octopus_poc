@@ -27,7 +27,7 @@ if ($keyPairExistsBefore) {
     Remove-EC2KeyPair -KeyName $keyPairName -Force
 }
 else {
-    "    $keyPairName does not exist in EC2. No need to delete it."
+    "    $keyPairName keypair does not exist in EC2. No need to delete it."
 }
 
 # Verifying keypair deleted
