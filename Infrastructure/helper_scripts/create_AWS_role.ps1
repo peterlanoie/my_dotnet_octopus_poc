@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 
 $policy = "$PSScriptRoot\IAM_SecretsManager_Policy.json"
 "Policy is saved at: $policy"
-
+# Policy ARN is: arn:aws:iam::aws:policy/SecretsManagerReadWrite
 
 $createRole = $false
 try {

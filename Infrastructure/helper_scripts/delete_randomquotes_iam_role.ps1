@@ -1,3 +1,17 @@
-Write-Warning "This script is not yet implemented! See logs for required actions."
-Write-Output "To do: Remove IAM role manually."
-Write-Output "To do: write the code for this script."
+$ErrorActionPreference = "Stop"
+
+# Verifying whether role exists
+$roleExists = $true
+try {
+    Get-IAMRole SecretsManagr | out-null
+}
+catch {
+    Write-Output "      SecretsManager role does not exist."
+    $roleExists = $false
+}
+
+# If role exists, delete it
+if ($roleExists) {
+    Get-IAMAttachedRolePolicyList -RoleName SecretsManager | Unregister-IAMRolePolicy -RoleName SecretsManager
+    Remove-IAMRole -RoleName SecretsManager -Force    
+}
