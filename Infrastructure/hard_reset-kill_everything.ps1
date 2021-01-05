@@ -56,7 +56,7 @@ Write-Output "*"
 # Delete the RandomQuotes Instances
 Write-Output "Executing .\helper_scripts\delete_all_randomquotes_infra.ps1..."
 Write-Output "  (No parameters)"
-& $PSScriptRoot\helper_scripts\delete_all_randomquotes_instances.ps1 
+& $PSScriptRoot\helper_scripts\delete_all_randomquotes_infra.ps1 
 Write-Output "*"
 
 # Delete the RandomQuotes Keypair
