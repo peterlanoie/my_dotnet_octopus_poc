@@ -23,6 +23,10 @@ env:
   OCTOPUS_PROJECT_NAME: RandomQuotes  
   OCTOPUS_SPACE_NAME: Default
   PATCH_NUMBER: ${{ github.run_number }}
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true # Note: This is a bad idea and should be fixed.
+                                        # For more information, see:
+                                        # https://github.blog/changelog/2020-10-01-github-actions-deprecating-set-env-and-add-path-commands/
+
 
 jobs:
   build:
