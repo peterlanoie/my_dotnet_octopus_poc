@@ -9,9 +9,8 @@ function Test-SecurityGroup {
     param (
         $name
     )
-
     try {
-        Get-SecurityGroup -GroupName $name | out-null
+        Get-EC2SecurityGroup -GroupName $name | out-null
         return $true
     }
     catch {
@@ -24,7 +23,7 @@ $secGroupExistsBefore = Test-SecurityGroup $securityGroupName
 if ($secGroupExistsBefore) {
     Write-Output "    Security group exists in EC2."
     Write-Output "    Deleting security group: $securityGroupName"
-    Remove-SecurityGroup -GroupName $securityGroupName -Force
+    Remove-EC2SecurityGroup -GroupName $securityGroupName -Force
 }
 else {
     "    $securityGroupName security group does not exist in EC2. No need to delete it."
