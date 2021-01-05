@@ -66,7 +66,13 @@ Write-Output "  (No parameters)"
 Write-Output "*"
 
 # Delete the RandomQuotes Security Group
-Write-Output "Executing .\helper_scripts\delete_randomquotes_security_group.ps1..."
+Write-Output "Executing .\helper_scripts\delete_randomquotes_securitygroup.ps1..."
 Write-Output "  (No parameters)"
 & $PSScriptRoot\helper_scripts\delete_randomquotes_security_group.ps1 
+Write-Output "*"
+
+# Delete IAM Role
+Write-Output "Executing .\helper_scripts\delete_randomquotes_iam_role.ps1..."
+Write-Output "  (No parameters)"
+& $PSScriptRoot\helper_scripts\delete_randomquotes_iam_role.ps1 
 Write-Output "*"
