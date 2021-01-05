@@ -41,12 +41,10 @@ $octoApiHeader = @{ "X-Octopus-ApiKey" = $octoApiKey }
 
 # Finding all the environments
 $environments = ((Invoke-WebRequest "$octoUrl/api/environments" -Headers $octoApiHeader -UseBasicParsing).content | ConvertFrom-Json).items
-# $environmentlist = $environments.Name
 
 # Deleting all the VMs and tentacles
 ForEach ($envName in $environments.Name) {
-    Write-Output "Executing $PSScriptRoot\kill_infra.ps1..."
-    Write-Output "  Parameters: -octoEnvName $envName"
+    Write-Output "  Executing $PSScriptRoot\kill_infra.ps1..."
+    Write-Output "   Parameters: -octoEnvName $envName"
     & $PSScriptRoot\kill_infra.ps1 -octoEnvName $envName -octoUrl $octoUrl -octoApiKey $octoApiKey 
-    Write-Output "*"
 }
