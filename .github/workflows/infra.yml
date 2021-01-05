@@ -25,6 +25,9 @@ env:
   OUTPUT_FOLDER: PackagesOutput
   PACKAGE_NAME: RandomQuotes_infra
   OCTOPUS_SPACE_NAME: Default
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true # Note: This is a bad idea and should be fixed.
+                                        # For more information, see:
+                                        # https://github.blog/changelog/2020-10-01-github-actions-deprecating-set-env-and-add-path-commands/
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
