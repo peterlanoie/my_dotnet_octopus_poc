@@ -84,6 +84,13 @@ if (test-path $holdingFile){
 }
 
 # Create holding file to stop any other runbooks from installing AWS Tools at the same time
+$OctopusUrl = "[OctopusUrl unknown]"
+try {
+    $RunbookRunId = $OctopusParameters["Octopus.Web.ServerUri"]
+}
+catch {
+    Write-Warning "Failed to detect Octopus.Web.ServerUri from Octopus system variables."
+}
 $RunbookRunId = "[RunbookRunId unknown]"
 try {
     $RunbookRunId = $OctopusParameters["Octopus.RunbookRun.Id"]
@@ -91,18 +98,20 @@ try {
 catch {
     Write-Warning "Failed to detect Octopus.RunbookRun.Id from Octopus system variables."
 }
-$RunbookRunUrl = "[RunbookRunUrl unknown]"
+$RunbookRunUrlSuffix = "[RunbookRunUrl unknown]"
 try {
-    $RunbookRunUrl = $OctopusParameters["Octopus.Web.RunbookRunLink"]
+    $RunbookRunUrlSuffix = $OctopusParameters["Octopus.Web.RunbookRunLink"]
 }
 catch {
     Write-Warning "Failed to detect Octopus.Web.RunbookRunLink from Octopus system variables."
 }
+$RunbookUrl = $OctopusUrl + $RunbookRunUrlSuffix 
+
 $startTime = Get-Date
 
 $holdingFileText = @"
-Runbook $RunbookRunId installing AWS tools at: $startTime
-Runbook run can be viewed at: $RunbookRunUrl 
+Runbook $RunbookRunId started installing AWS tools at: $startTime
+Runbook run can be viewed at: $RunbookUrl 
 "@
 
 Write-Output "    Creating a holding file at: $holdingFile"
