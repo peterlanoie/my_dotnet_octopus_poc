@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 # Verifying whether role exists
 $roleExists = $true
 try {
-    Get-IAMRole SecretsManagr | out-null
+    Get-IAMRole SecretsManager | out-null
 }
 catch {
     Write-Output "      SecretsManager role does not exist."
