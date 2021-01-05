@@ -91,8 +91,20 @@ try {
 catch {
     Write-Warning "Failed to detect Octopus.RunbookRun.Id from Octopus system variables."
 }
+$RunbookRunUrl = "[RunbookRunUrl unknown]"
+try {
+    $RunbookRunUrl = $OctopusParameters["Octopus.Web.RunbookRunLink"]
+}
+catch {
+    Write-Warning "Failed to detect Octopus.Web.RunbookRunLink from Octopus system variables."
+}
 $startTime = Get-Date
-$holdingFileText = "Runbook $RunbookRunId installing AWS tools at: $startTime"
+
+$holdingFileText = @"
+Runbook $RunbookRunId installing AWS tools at: $startTime
+Runbook run can be viewed at: $RunbookRunUrl 
+"@
+
 Write-Output "    Creating a holding file at: $holdingFile"
 try {$holdingFileText | out-file $holdingFile
 }
