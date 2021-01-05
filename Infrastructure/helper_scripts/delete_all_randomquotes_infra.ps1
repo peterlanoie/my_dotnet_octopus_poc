@@ -1,24 +1,12 @@
 param(
-    $project = "",
     $octoUrl = "",
-    $octoApiKey = "",
-    $spaceId = "Spaces-1" # If you are using the non-default space you will need to update this
+    $octoApiKey = ""
 )
 
 $ErrorActionPreference = "Stop"
 
 # Setting default values for parameters
 $missingParams = @()
-
-if ($octoApiKey -like ""){
-    try {
-        $octoApiKey = $OctopusParameters["API_KEY"]
-        Write-Output "    Found value for octoApiKey from Octopus variables." 
-    }
-    catch {
-        $missingParams = $missingParams + "-octoApiKey"
-    }
-}
 
 if ($octoUrl -like ""){
     try {
@@ -27,6 +15,16 @@ if ($octoUrl -like ""){
     }
     catch {
         $missingParams = $missingParams + "-octoUrl"
+    }
+}
+
+if ($octoApiKey -like ""){
+    try {
+        $octoApiKey = $OctopusParameters["API_KEY"]
+        Write-Output "    Found value for octoApiKey from Octopus variables." 
+    }
+    catch {
+        $missingParams = $missingParams + "-octoApiKey"
     }
 }
 
@@ -42,12 +40,16 @@ if ($missingParams.Count -gt 0){
 $octoApiHeader = @{ "X-Octopus-ApiKey" = $octoApiKey }
 
 # Finding all the environments
-$environments = (Invoke-WebRequest "$octoUrl/api/environments" -Headers $octoApiHeader -UseBasicParsing).content | ConvertFrom-Json
+$environments = ((Invoke-WebRequest "$octoUrl/api/environments" -Headers $octoApiHeader -UseBasicParsing).content | ConvertFrom-Json).items
+
+#$environmentlist = @()
+$environmentlist = $environments.Name
+Write-Output $environmentlist
 
 # Deleting all the VMs and tentacles
-ForEach-Object ($envName -in $environments.Name) {
+ForEach ($envName in $environmentlist) {
     Write-Output "Executing $PSScriptRoot\kill_infra.ps1..."
     Write-Output "  Parameters: -octoEnvName $envName"
-    & $PSScriptRoot\helper_scripts\kill_infra.ps1 -octoEnvName $envName
+    & $PSScriptRoot\kill_infra.ps1 -octoEnvName $envName -octoUrl $octoUrl -octoApiKey $octoApiKey 
     Write-Output "*"
 }
