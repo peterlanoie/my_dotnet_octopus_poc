@@ -14,6 +14,10 @@ catch {
 if ($roleExists) {
     Write-Output "      Removing policy from SecretsManager role."
     Get-IAMAttachedRolePolicyList -RoleName SecretsManager | Unregister-IAMRolePolicy -RoleName SecretsManager
+    
+    
+    # Get-IAMInstanceProfileForRole -RoleName SecretsManager | Remove-IAMInstanceProfile -Force
+    
     Write-Output "      Removing SecretsManager role."
     Remove-IAMRole -RoleName SecretsManager -Force    
 }
