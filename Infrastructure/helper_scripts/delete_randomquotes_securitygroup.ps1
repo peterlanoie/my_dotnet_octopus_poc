@@ -33,10 +33,12 @@ if ($secGroupExistsBefore) {
         }
         catch {
             Write-Output "        Failed to remove security group. Error was:"
+            if ($i = 1) {
+                Write-Output "        (We probably need to wait about 20-30 seconds for the instances to shut down.)"
+            }
             $lastError = $Error[0]
             Write-Output "          $lastError"
             if ($i -lt 10) {
-                Write-Output "        (We probably need to wait a few moments for the instances to shut down.)"
                 Write-Output "        Waiting $waitTime seconds then trying again."
                 Start-Sleep -s $waitTime
             }
