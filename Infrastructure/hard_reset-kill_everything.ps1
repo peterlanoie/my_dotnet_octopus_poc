@@ -60,7 +60,7 @@ Write-Output "  (No parameters)"
 Write-Output "*"
 
 # Delete the RandomQuotes Keypair
-Write-Output "Executing .\helper_scripts\delete_randomquotes_ keypair.ps1..."
+Write-Output "Executing .\helper_scripts\delete_randomquotes_keypair.ps1..."
 Write-Output "  (No parameters)"
 & $PSScriptRoot\helper_scripts\delete_randomquotes_keypair.ps1 
 Write-Output "*"
