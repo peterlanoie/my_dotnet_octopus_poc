@@ -23,7 +23,28 @@ $secGroupExistsBefore = Test-SecurityGroup $securityGroupName
 if ($secGroupExistsBefore) {
     Write-Output "    Security group exists in EC2."
     Write-Output "    Deleting security group: $securityGroupName"
-    Remove-EC2SecurityGroup -GroupName $securityGroupName -Force
+    $attempts = 12
+    $waitTime = 5
+    for ($i -eq 1; $i -le $attempts; $i++){
+        try {
+            Write-Output "      Attempt $i / $attempts to delete security group: $securityGroupName"
+            Remove-EC2SecurityGroup -GroupName $securityGroupName -Force
+            break
+        }
+        catch {
+            Write-Output "        Failed to remove security group. Error was:"
+            Write-Output "          $Error[0]"
+            if ($i -lt 10) {
+                Write-Output "        (We probably need to wait a few moments for the instances to shut down.)"
+                Write-Output "        Waiting 5 seconds then trying again."
+                Start-Sleep -s $waitTime
+            }
+            else {
+                Write-Error "Failed to delete security group. Ran out of attempts. If it was dependencies, ensure all instances are terminated, then try again."
+            }
+            
+        }
+    }
 }
 else {
     "    $securityGroupName security group does not exist in EC2. No need to delete it."
