@@ -112,6 +112,7 @@ Write-Output "*"
 Write-Output "Executing .\helper_scripts\add_role_to_profile.ps1..."
 Write-Output "  (No parameters)"
 & $PSScriptRoot\helper_scripts\add_role_to_profile.ps1
+Write-Output "*"
 
 # Creates a security group in AWS to allow RDP sessions on all your demo VMs
 Write-Output "Executing .\helper_scripts\create_security_group.ps1..."

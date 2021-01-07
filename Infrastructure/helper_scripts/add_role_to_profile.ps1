@@ -14,7 +14,7 @@ catch {
 }
 
 Write-Output "    Creating new profile: RandomQuotes"
-New-IAMInstanceProfile -InstanceProfileName RandomQuotes
+New-IAMInstanceProfile -InstanceProfileName RandomQuotes | out-null
 
 Write-Output "    Adding SecretsManager role to profile RandomQuotes."
 Add-IAMRoleToInstanceProfile -InstanceProfileName RandomQuotes -RoleName SecretsManager
