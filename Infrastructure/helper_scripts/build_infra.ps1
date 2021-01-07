@@ -1,7 +1,6 @@
 param(
     $count = 1,
     $instanceType = "t2.micro", # 1 vCPU, 1GiB Mem, free tier elligible: https://aws.amazon.com/ec2/instance-types/
-    $ami = "ami-0d2455a34bf134234", # Microsoft Windows Server 2019 Base with Containers
     $role = "RandomQuotes-WebServer",
     $tagValue = "Created manually",
     $octoUrl = "",
@@ -17,6 +16,11 @@ $ErrorActionPreference = "Stop"
 $userDataFile = "VM_UserData.ps1"
 $userDataPath = "$PSScriptRoot\$userDataFile"
 $userData = Get-Content -Path $userDataPath -Raw
+
+# Getting the required instance ami for AWS region
+$image = Get-SSMLatestEC2Image -ImageName Windows_Server-2019-English-Full-Bas* -Path ami-windows-latest | Where-Object {$_.Name -like "Windows_Server-2019-English-Full-Base"} | Select-Object Value
+$ami = $image.Value
+Write-Output "    Windows_Server-2019-English-Full-Base image in this AWS region has ami: $ami"
 
 # Preparing startup script for VM
 if ($DeployTentacle){

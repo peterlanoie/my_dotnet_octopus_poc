@@ -150,6 +150,15 @@ else {
     Install-Module AWS.Tools.IdentityManagement -Force
 }
 
+if ($Installedmodules.name -contains "AWS.Tools.SimpleSystemsManagement"){
+    Write-Output "      Module AWS.Tools.SimpleSystemsManagement is already installed "
+}
+else {
+    Write-Output "      AWS.Tools.SimpleSystemsManagement is not installed."
+    Write-Output "        Installing AWS.Tools.SimpleSystemsManagement..."
+    Install-Module AWS.Tools.SimpleSystemsManagement -Force
+}
+
 Write-Output "      AWS Tools is set up and ready to use."
 
 # Delete holding file
