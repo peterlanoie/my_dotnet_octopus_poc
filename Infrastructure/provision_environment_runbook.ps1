@@ -97,9 +97,16 @@ Write-Output "*"
 
 # Configure your default profile
 Write-Output "Executing .\helper_scripts\configure_default_aws_profile.ps1..."
-Write-Output "  (No parameters)"
+Write-Output "  Parameterrs: -AwsAccessKey $awsAccessKey -AwsSecretKey *** -DefaulAwsRegion $defaulAwsRegion"
 & $PSScriptRoot\helper_scripts\configure_default_aws_profile.ps1 -AwsAccessKey $awsAccessKey -AwsSecretKey $awsSecretKey -DefaulAwsRegion $defaulAwsRegion
 Write-Output "*"
+
+# Create AWS Role
+Write-Output "Executing .\helper_scripts\create_aws_role.ps1..."
+Write-Output "  (No parameters)"
+& $PSScriptRoot\helper_scripts\create_aws_role.ps1
+Write-Output "*"
+
 
 # Creates a security group in AWS to allow RDP sessions on all your demo VMs
 Write-Output "Executing .\helper_scripts\create_security_group.ps1..."
