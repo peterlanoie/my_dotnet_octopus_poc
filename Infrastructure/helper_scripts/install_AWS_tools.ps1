@@ -86,7 +86,7 @@ if (test-path $holdingFile){
 # Create holding file to stop any other runbooks from installing AWS Tools at the same time
 $OctopusUrl = "[OctopusUrl unknown]"
 try {
-    $RunbookRunId = $OctopusParameters["Octopus.Web.ServerUri"]
+    $OctopusUrl = $OctopusParameters["Octopus.Web.ServerUri"]
 }
 catch {
     Write-Warning "Failed to detect Octopus.Web.ServerUri from Octopus system variables."
