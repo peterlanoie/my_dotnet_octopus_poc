@@ -23,8 +23,8 @@ if ($roleExists) {
 Write-Output "      Attempting to remove RendomQuotes profile."
 try {
     Remove-IAMInstanceProfile -InstanceProfileName RandomQuotes -Force
-    Write-Output "        Removed existing profile RandomQuotes."
+    Write-Output "        Removed profile RandomQuotes."
 }
 catch {
-    Write-Output "        Profile RandomQuotes does not already exist."
+    Write-Output "        Profile RandomQuotes didn't exist."
 }
