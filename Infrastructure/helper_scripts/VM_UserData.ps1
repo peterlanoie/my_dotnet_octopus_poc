@@ -64,6 +64,13 @@ Write-Output "Executing ./install_tentacle.ps1 -octopusServerUrl $octopusServerU
 ./install_tentacle.ps1 -octopusServerUrl $octopusServerUrl -registerInEnvironments $registerInEnvironments -registerInRoles $registerInRoles
 DEPLOY TENTACLE #>
 
+Set-Location $scriptsDir
+
+Write-Output "*"
+Get-Script -script "install_chrome_with_choco.ps1"
+Write-Output "Executing ./install_chrome_with_choco.ps1"
+./setup_dotnet_core.ps1
+
 Write-Output "VM_UserData startup script completed..."
 </powershell>
 
