@@ -67,9 +67,9 @@ DEPLOY TENTACLE #>
 Set-Location "C:\Startup\scripts"
 
 Write-Output "*"
-Get-Script -script "install_chrome_with_choco.ps1"
-Write-Output "Executing ./install_chrome_with_choco.ps1"
-./install_chrome_with_choco.ps1
+Get-Script -script "download_tentacle.ps1"
+Write-Output "Executing ./download_tentacle.ps1"
+./download_tentacle.ps1
 
 Write-Output "VM_UserData startup script completed..."
 </powershell>
