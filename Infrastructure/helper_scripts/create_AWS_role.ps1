@@ -21,6 +21,7 @@ catch {
 if ($createRole) {
     Write-Output "    Creating role $roleName from policy saved at: $policy"
     New-IAMRole -AssumeRolePolicyDocument (Get-Content -raw $policy) -RoleName $roleName
+    Register-IAMRolePolicy -RoleName $roleName -PolicyArn arn:aws:iam::aws:policy/SecretsManagerReadWrite
 } 
 else {
     Write-Output "    Role $roleName already exists."
