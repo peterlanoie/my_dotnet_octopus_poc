@@ -18,3 +18,13 @@ if ($roleExists) {
     Write-Output "      Removing SecretsManager role."
     Remove-IAMRole -RoleName SecretsManager -Force    
 }
+
+# If RandomQuotes profile exists, delete it.
+Write-Output "      Attempting to remove RendomQuotes profile."
+try {
+    Remove-IAMInstanceProfile -InstanceProfileName RandomQuotes -Force
+    Write-Output "        Removed existing profile RandomQuotes."
+}
+catch {
+    Write-Output "        Profile RandomQuotes does not already exist."
+}
