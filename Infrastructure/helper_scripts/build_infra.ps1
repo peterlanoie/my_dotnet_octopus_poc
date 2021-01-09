@@ -58,12 +58,13 @@ Write-Output "      $totalRequired more instances required."
 
 if ($totalRequired -gt 0){
     Write-Output "    Launching $totalRequired instances of type $instanceType and ami $ami."
-    Write-Output "      Instances will each have tag $role with value $tagValue."
 
     $NewInstance = New-EC2Instance -ImageId $ami -MinCount $totalRequired -MaxCount $totalRequired -InstanceType $instanceType -UserData $encodedUserData -KeyName RandomQuotes -SecurityGroup RandomQuotes -IamInstanceProfile_Name RandomQuotes
 
     # Tagging all the instances
+    Write-Output "      Instances will each have tag $role with value $tagValue."
     ForEach ($InstanceID  in ($NewInstance.Instances).InstanceId){
+        Write-Output "        Tagging instance ID: $InstanceID"
         New-EC2Tag -Resources $( $InstanceID ) -Tags @(
             @{ Key=$role; Value=$tagValue}
         );
