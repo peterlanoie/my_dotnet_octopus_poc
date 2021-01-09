@@ -82,6 +82,7 @@ catch {
 
 # If no default tag has been provided, but we do have an octoEnv, set tagValue to octoEnv
 if (($tagValue -like "Created manually") -and ($OctoEnv -notlike "") ){
+    Write-Output "Updating tag value to Octopus env name: $tagValue -> $octoEnv"
     $tagValue = $octoEnv
 }
 
